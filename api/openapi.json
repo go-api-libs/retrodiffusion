@@ -746,30 +746,43 @@
         "type": "object",
         "properties": {
           "detail": {
-            "oneOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "code": {
-                    "type": "string"
-                  },
-                  "message": {
-                    "type": "string"
-                  }
-                }
-              },
-              {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "msg": {
-                      "type": "string"
-                    }
-                  }
-                }
-              }
-            ]
+            "$ref": "#/components/schemas/ErrorCodeAndMessage"
+          }
+        },
+        "required": [
+          "detail"
+        ]
+      },
+      "ErrorCodeAndMessage": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ErrorDetail": {
+        "type": "object",
+        "properties": {
+          "msg": {
+            "type": "string"
+          }
+        }
+      },
+      "ErrorDetails": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ErrorDetail"
+        }
+      },
+      "Errors": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "$ref": "#/components/schemas/ErrorDetails"
           }
         }
       },

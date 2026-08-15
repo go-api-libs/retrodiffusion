@@ -136,12 +136,26 @@ type EditToolResponse struct {
 
 // Error defines a model
 type Error struct {
-	Detail *ErrorDetail `json:"detail,omitempty"`
+	Detail ErrorCodeAndMessage `json:"detail"`
 }
 
-// ErrorDetailOneOf1Item defines a model
-type ErrorDetailOneOf1Item struct {
+// ErrorCodeAndMessage defines a model
+type ErrorCodeAndMessage struct {
+	Code    string `json:"code,omitzero"`
+	Message string `json:"message,omitzero"`
+}
+
+// ErrorDetail defines a model
+type ErrorDetail struct {
 	Msg string `json:"msg,omitzero"`
+}
+
+// ErrorDetails defines a model
+type ErrorDetails []ErrorDetail
+
+// Errors defines a model
+type Errors struct {
+	Detail ErrorDetails `json:"detail,omitempty"`
 }
 
 // GetInferenceRequestOkJSONResponse defines a model
@@ -229,7 +243,7 @@ type PixelFixerRequest struct {
 
 // PixelFixerResponse defines a model
 type PixelFixerResponse struct {
-	Base64Images []string `json:"base64_images,omitempty"`
+	Base64Images [1]string `json:"base64_images,omitempty"`
 }
 
 // StatusResponse defines a model
