@@ -935,34 +935,12 @@
         }
       },
       "PixelFixerRequest": {
+        "description": "Provide exactly one of input_image or image_url. width/height are optional and only used by the neural endpoint.",
         "type": "object",
-        "oneOf": [
-          {
-            "not": {
-              "required": [
-                "image_url"
-              ]
-            },
-            "required": [
-              "input_image"
-            ]
-          },
-          {
-            "not": {
-              "required": [
-                "input_image"
-              ]
-            },
-            "required": [
-              "image_url"
-            ]
-          }
-        ],
         "properties": {
           "input_image": {
             "description": "Raw base64 PNG/JPEG/WebP or data URI",
-            "type": "string",
-            "format": "base64"
+            "type": "string"
           },
           "image_url": {
             "description": "Public HTTPS PNG/JPEG/WebP",

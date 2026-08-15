@@ -215,7 +215,7 @@ type ListAvailableStylesOkJSONResponse []StyleSelectorItem
 // ListEditToolsOkJSONResponse defines a model
 type ListEditToolsOkJSONResponse []map[string]struct{}
 
-// PixelFixerRequest defines a model
+// Provide exactly one of input_image or image_url. width/height are optional and only used by the neural endpoint.
 type PixelFixerRequest struct {
 	// Raw base64 PNG/JPEG/WebP or data URI
 	InputImage string `json:"input_image,omitzero"`
