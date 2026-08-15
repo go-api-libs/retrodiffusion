@@ -218,8 +218,8 @@ func GetInferenceJob[R any](ctx context.Context, c *Client, taskID string) (*R, 
 // Returns status, settings, billing, and freshly signed output URLs. Any active personal key from owning account may retrieve after key rotation.
 //
 //	GET /inferences/requests/{request_id}
-func (c *Client) GetInferenceRequest(ctx context.Context, requestID string) (*GetInferenceRequestOkJSONResponse, error) {
-	return GetInferenceRequest[GetInferenceRequestOkJSONResponse](ctx, c, requestID)
+func (c *Client) GetInferenceRequest(ctx context.Context, requestID string) (*InferenceRequestResult, error) {
+	return GetInferenceRequest[InferenceRequestResult](ctx, c, requestID)
 }
 
 // Returns status, settings, billing, and freshly signed output URLs. Any active personal key from owning account may retrieve after key rotation.
@@ -324,8 +324,8 @@ func GetBalance[R any](ctx context.Context, c *Client) (*R, error) {
 // Live style catalog with limits
 //
 //	GET /styles/selector
-func (c *Client) ListAvailableStyles(ctx context.Context, params *ListAvailableStylesParams) (*ListAvailableStylesOkJSONResponse, error) {
-	return ListAvailableStyles[ListAvailableStylesOkJSONResponse](ctx, c, params)
+func (c *Client) ListAvailableStyles(ctx context.Context, params *ListAvailableStylesParams) (*StyleDescriptors, error) {
+	return ListAvailableStyles[StyleDescriptors](ctx, c, params)
 }
 
 // Live style catalog with limits
@@ -388,8 +388,8 @@ func ListAvailableStyles[R any](ctx context.Context, c *Client, params *ListAvai
 // Create custom user style (RD Pro reference template)
 //
 //	POST /styles
-func (c *Client) CreateUserStyle(ctx context.Context, body CreateStyleRequest) (*StyleResponse, error) {
-	return CreateUserStyle[StyleResponse](ctx, c, body)
+func (c *Client) CreateUserStyle(ctx context.Context, body CreateStyleRequest) (*Style, error) {
+	return CreateUserStyle[Style](ctx, c, body)
 }
 
 // Create custom user style (RD Pro reference template)
@@ -495,8 +495,8 @@ func DeleteUserStyle[R any](ctx context.Context, c *Client, styleID string) (*R,
 // Update user style
 //
 //	PATCH /styles/{style_id}
-func (c *Client) UpdateUserStyle(ctx context.Context, styleID string, body *CreateStyleRequest) (*StyleResponse, error) {
-	return UpdateUserStyle[StyleResponse](ctx, c, styleID, body)
+func (c *Client) UpdateUserStyle(ctx context.Context, styleID string, body *CreateStyleRequest) (*Style, error) {
+	return UpdateUserStyle[Style](ctx, c, styleID, body)
 }
 
 // Update user style

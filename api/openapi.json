@@ -21,123 +21,68 @@
         "description": "Main generation endpoint. Set check_cost=true for free price estimate. Set async=true for long-running jobs (animations/batches). Use upload_outputs=true for signed URLs.",
         "operationId": "CreateInference",
         "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/InferenceRequest"
-              }
-            }
-          }
+          "$ref": "#/components/requestBodies/CreateInference"
         },
         "responses": {
           "200": {
-            "description": "Sync success or check_cost result",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InferenceResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/InferenceResponse"
           },
           "202": {
-            "description": "Async accepted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AsyncAccepted"
-                }
-              }
-            }
+            "$ref": "#/components/responses/AsyncAccepted"
           },
           "400": {
-            "description": "Invalid input or insufficient balance",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
+            "$ref": "#/components/responses/BadRequest"
           },
           "401": {
-            "description": "Missing/invalid X-RD-Token"
+            "$ref": "#/components/responses/Unauthorized"
           },
           "422": {
-            "description": "Body failed validation"
+            "$ref": "#/components/responses/UnprocessableEntity"
           },
           "429": {
-            "description": "Rate limited"
+            "$ref": "#/components/responses/TooManyRequests"
           },
           "500": {
-            "description": "Temporary failure (charges refunded)"
+            "$ref": "#/components/responses/InternalServerError"
           }
         }
       }
     },
     "/inferences/tasks/{task_id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/task_id"
+        }
+      ],
       "get": {
         "summary": "Poll async inference job",
         "operationId": "GetInferenceJob",
-        "parameters": [
-          {
-            "name": "task_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
-            "description": "Task status",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TaskStatus"
-                }
-              }
-            }
+            "$ref": "#/components/responses/TaskStatus"
           },
           "404": {
-            "description": "Task not found or not owned"
+            "$ref": "#/components/responses/TaskNotFound"
           }
         }
       }
     },
     "/inferences/requests/{request_id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/request_id"
+        }
+      ],
       "get": {
         "summary": "Retrieve generation during 24h retention window",
         "description": "Returns status, settings, billing, and freshly signed output URLs. Any active personal key from owning account may retrieve after key rotation.",
         "operationId": "GetInferenceRequest",
-        "parameters": [
-          {
-            "name": "request_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
-            "description": "Request details + signed URLs",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "object"
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/InferenceRequest"
           },
           "404": {
-            "description": "Unknown, non-owned, or expired"
+            "$ref": "#/components/responses/NotFound"
           }
         }
       }
@@ -148,66 +93,29 @@
         "operationId": "GetBalance",
         "responses": {
           "200": {
-            "description": "Current balance",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreditsResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/CreditsResponse"
           },
           "403": {
-            "description": "Invalid token"
+            "$ref": "#/components/responses/Forbidden"
           }
         }
       }
     },
     "/styles/selector": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/model"
+        },
+        {
+          "$ref": "#/components/parameters/tab"
+        }
+      ],
       "get": {
         "summary": "Live style catalog with limits",
         "operationId": "ListAvailableStyles",
-        "parameters": [
-          {
-            "name": "model",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "rd_fast",
-                "rd_plus",
-                "rd_pro",
-                "rd_mini"
-              ]
-            }
-          },
-          {
-            "name": "tab",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "enum": [
-                "tab:image",
-                "tab:animation",
-                "tab:advanced-animation",
-                "tab:tileset"
-              ]
-            }
-          }
-        ],
         "responses": {
           "200": {
-            "description": "Array of style descriptors",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/StyleSelectorItem"
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/StyleDescriptors"
           }
         }
       }
@@ -217,25 +125,11 @@
         "summary": "Create custom user style (RD Pro reference template)",
         "operationId": "CreateUserStyle",
         "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateStyleRequest"
-              }
-            }
-          }
+          "$ref": "#/components/requestBodies/CreateUserStyle"
         },
         "responses": {
           "201": {
-            "description": "Style created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StyleResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/Style"
           }
         }
       }
@@ -246,29 +140,12 @@
         "operationId": "DeleteUserStyle",
         "parameters": [
           {
-            "name": "style_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/style_id"
           }
         ],
         "responses": {
           "200": {
-            "description": "Deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "deleted": {
-                      "type": "boolean"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/DeleteUserStyleOkResponse"
           }
         }
       },
@@ -277,33 +154,15 @@
         "operationId": "UpdateUserStyle",
         "parameters": [
           {
-            "name": "style_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "$ref": "#/components/parameters/style_id2"
           }
         ],
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateStyleRequest"
-              }
-            }
-          }
+          "$ref": "#/components/requestBodies/UpdateUserStyle"
         },
         "responses": {
           "200": {
-            "description": "Updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StyleResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/UpdateUserStyleOkResponse"
           }
         }
       }
@@ -314,106 +173,55 @@
         "operationId": "ListEditTools",
         "responses": {
           "200": {
-            "description": "Tool list with costs, limits, api_fields",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "additionalProperties": {
-                      "type": "object"
-                    }
-                  }
-                }
-              }
-            }
+            "$ref": "#/components/responses/ListEditToolsOkResponse"
           }
         }
       }
     },
     "/edit/tools/{tool_id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/tool_id"
+        }
+      ],
       "post": {
         "summary": "Run edit tool",
         "description": "Tools: image_edit, inpainting, outpainting, seam_tiling, background_remover, color_style_transfer, color_reducer, palette_converter, k_centroid_downscale, pixel_correction, rotate. Free tools may require min balance $0.01.",
         "operationId": "RunEditTool",
-        "parameters": [
-          {
-            "name": "tool_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EditToolRequest"
-              }
-            }
-          }
+          "$ref": "#/components/requestBodies/RunEditTool"
         },
         "responses": {
           "200": {
-            "description": "Tool result",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EditToolResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/RunEditToolOkResponse"
           },
           "400": {
-            "description": "Semantically invalid or insufficient balance"
+            "$ref": "#/components/responses/RunEditToolBadRequestResponse"
           },
           "404": {
-            "description": "Unknown/disabled tool"
+            "$ref": "#/components/responses/RunEditToolNotFoundResponse"
           },
           "422": {
-            "description": "Schema mismatch"
+            "$ref": "#/components/responses/RunEditToolUnprocessableEntityResponse"
           }
         }
       }
     },
     "/edit/tools/{tool_id}/estimate": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/tool_id2"
+        }
+      ],
       "post": {
         "summary": "Estimate edit tool cost (no run)",
         "operationId": "EstimateEditToolCost",
-        "parameters": [
-          {
-            "name": "tool_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EditToolRequest"
-              }
-            }
-          }
+          "$ref": "#/components/requestBodies/EstimateEditToolCost"
         },
         "responses": {
           "200": {
-            "description": "Cost estimate",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EditToolEstimate"
-                }
-              }
-            }
+            "$ref": "#/components/responses/EstimateEditToolCostOkResponse"
           }
         }
       }
@@ -424,34 +232,20 @@
         "description": "Native Rust grid detection. 16x16 to 16 megapixels. Rate limits: 120/min with purchase history, else 10/min. Shared with neural.",
         "operationId": "FixPixelArtStandard",
         "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PixelFixerRequest"
-              }
-            }
-          }
+          "$ref": "#/components/requestBodies/FixPixelArtStandard"
         },
         "responses": {
           "200": {
-            "description": "Fixed image",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PixelFixerResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/FixPixelArtStandardOkResponse"
           },
           "413": {
-            "description": "Request or output too large"
+            "$ref": "#/components/responses/FixPixelArtStandardRequestEntityTooLargeResponse"
           },
           "422": {
-            "description": "Invalid image"
+            "$ref": "#/components/responses/FixPixelArtStandardUnprocessableEntityResponse"
           },
           "429": {
-            "description": "Rate limit exceeded"
+            "$ref": "#/components/responses/FixPixelArtStandardTooManyRequestsResponse"
           }
         }
       }
@@ -462,34 +256,20 @@
         "description": "Accepts larger sources, bilinear-downscales above 1MP budget. Optional width/height target (capped 16MP).",
         "operationId": "FixPixelArtNeural",
         "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PixelFixerRequest"
-              }
-            }
-          }
+          "$ref": "#/components/requestBodies/FixPixelArtNeural"
         },
         "responses": {
           "200": {
-            "description": "Fixed image",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PixelFixerResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/FixPixelArtNeuralOkResponse"
           },
           "413": {
-            "description": "Request or output too large"
+            "$ref": "#/components/responses/FixPixelArtNeuralRequestEntityTooLargeResponse"
           },
           "422": {
-            "description": "Invalid image"
+            "$ref": "#/components/responses/FixPixelArtNeuralUnprocessableEntityResponse"
           },
           "429": {
-            "description": "Rate limit exceeded"
+            "$ref": "#/components/responses/FixPixelArtNeuralTooManyRequestsResponse"
           }
         }
       }
@@ -500,14 +280,7 @@
         "operationId": "GetServiceStatus",
         "responses": {
           "200": {
-            "description": "Per-model status",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StatusResponse"
-                }
-              }
-            }
+            "$ref": "#/components/responses/GetServiceStatusOkResponse"
           }
         }
       }
@@ -598,6 +371,14 @@
           }
         }
       },
+      "DeleteUserStyleOkJSONResponse": {
+        "type": "object",
+        "properties": {
+          "deleted": {
+            "type": "boolean"
+          }
+        }
+      },
       "EditToolEstimate": {
         "type": "object",
         "properties": {
@@ -676,13 +457,7 @@
             "type": "integer"
           },
           "dither_mode": {
-            "type": "string",
-            "enum": [
-              "none",
-              "bayer_2x2",
-              "bayer_4x4",
-              "bayer_8x8"
-            ]
+            "$ref": "#/components/schemas/EditToolRequestDitherMode"
           },
           "dither_strength": {
             "type": "integer",
@@ -704,6 +479,15 @@
         },
         "required": [
           "input_image"
+        ]
+      },
+      "EditToolRequestDitherMode": {
+        "type": "string",
+        "enum": [
+          "none",
+          "bayer_2x2",
+          "bayer_4x4",
+          "bayer_8x8"
         ]
       },
       "EditToolResponse": {
@@ -911,6 +695,12 @@
           "num_images"
         ]
       },
+      "InferenceRequestResult": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object"
+        }
+      },
       "InferenceResponse": {
         "type": "object",
         "properties": {
@@ -945,6 +735,15 @@
           },
           "outputs_retained_until": {
             "type": "integer"
+          }
+        }
+      },
+      "ListEditToolsOkJSONResponse": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
           }
         }
       },
@@ -998,7 +797,7 @@
           }
         }
       },
-      "StyleResponse": {
+      "Style": {
         "type": "object",
         "properties": {
           "id": {
@@ -1016,7 +815,7 @@
           }
         }
       },
-      "StyleSelectorItem": {
+      "StyleDescriptor": {
         "type": "object",
         "properties": {
           "prompt_style": {
@@ -1060,17 +859,17 @@
           }
         }
       },
+      "StyleDescriptors": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/StyleDescriptor"
+        }
+      },
       "TaskStatus": {
         "type": "object",
         "properties": {
           "status": {
-            "type": "string",
-            "enum": [
-              "pending",
-              "running",
-              "succeeded",
-              "failed"
-            ]
+            "$ref": "#/components/schemas/TaskStatusStatus"
           },
           "task_id": {
             "type": "string"
@@ -1079,14 +878,383 @@
             "$ref": "#/components/schemas/InferenceResponse"
           },
           "error": {
-            "type": "object",
-            "properties": {
-              "status_code": {
-                "type": "integer"
-              },
-              "detail": {
-                "type": "string"
-              }
+            "$ref": "#/components/schemas/TaskStatusError"
+          }
+        }
+      },
+      "TaskStatusError": {
+        "type": "object",
+        "properties": {
+          "status_code": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "string"
+          }
+        }
+      },
+      "TaskStatusStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "running",
+          "succeeded",
+          "failed"
+        ]
+      }
+    },
+    "responses": {
+      "AsyncAccepted": {
+        "description": "Async accepted",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/AsyncAccepted"
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "Invalid input or insufficient balance",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "CreditsResponse": {
+        "description": "Current balance",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreditsResponse"
+            }
+          }
+        }
+      },
+      "DeleteUserStyleOkResponse": {
+        "description": "Deleted",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/DeleteUserStyleOkJSONResponse"
+            }
+          }
+        }
+      },
+      "EstimateEditToolCostOkResponse": {
+        "description": "Cost estimate",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EditToolEstimate"
+            }
+          }
+        }
+      },
+      "FixPixelArtNeuralOkResponse": {
+        "description": "Fixed image",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PixelFixerResponse"
+            }
+          }
+        }
+      },
+      "FixPixelArtNeuralRequestEntityTooLargeResponse": {
+        "description": "Request or output too large"
+      },
+      "FixPixelArtNeuralTooManyRequestsResponse": {
+        "description": "Rate limit exceeded"
+      },
+      "FixPixelArtNeuralUnprocessableEntityResponse": {
+        "description": "Invalid image"
+      },
+      "FixPixelArtStandardOkResponse": {
+        "description": "Fixed image",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PixelFixerResponse"
+            }
+          }
+        }
+      },
+      "FixPixelArtStandardRequestEntityTooLargeResponse": {
+        "description": "Request or output too large"
+      },
+      "FixPixelArtStandardTooManyRequestsResponse": {
+        "description": "Rate limit exceeded"
+      },
+      "FixPixelArtStandardUnprocessableEntityResponse": {
+        "description": "Invalid image"
+      },
+      "Forbidden": {
+        "description": "Invalid token"
+      },
+      "GetServiceStatusOkResponse": {
+        "description": "Per-model status",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/StatusResponse"
+            }
+          }
+        }
+      },
+      "InferenceRequest": {
+        "description": "Request details + signed URLs",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/InferenceRequestResult"
+            }
+          }
+        }
+      },
+      "InferenceResponse": {
+        "description": "Sync success or check_cost result",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/InferenceResponse"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Temporary failure (charges refunded)"
+      },
+      "ListEditToolsOkResponse": {
+        "description": "Tool list with costs, limits, api_fields",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ListEditToolsOkJSONResponse"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Unknown, non-owned, or expired"
+      },
+      "RunEditToolBadRequestResponse": {
+        "description": "Semantically invalid or insufficient balance"
+      },
+      "RunEditToolNotFoundResponse": {
+        "description": "Unknown/disabled tool"
+      },
+      "RunEditToolOkResponse": {
+        "description": "Tool result",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EditToolResponse"
+            }
+          }
+        }
+      },
+      "RunEditToolUnprocessableEntityResponse": {
+        "description": "Schema mismatch"
+      },
+      "Style": {
+        "description": "Style created",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Style"
+            }
+          }
+        }
+      },
+      "StyleDescriptors": {
+        "description": "Array of style descriptors",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/StyleDescriptors"
+            }
+          }
+        }
+      },
+      "TaskNotFound": {
+        "description": "Task not found or not owned"
+      },
+      "TaskStatus": {
+        "description": "Task status",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TaskStatus"
+            }
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "Rate limited"
+      },
+      "Unauthorized": {
+        "description": "Missing/invalid X-RD-Token"
+      },
+      "UnprocessableEntity": {
+        "description": "Body failed validation"
+      },
+      "UpdateUserStyleOkResponse": {
+        "description": "Updated",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Style"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "model": {
+        "name": "model",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "rd_fast",
+            "rd_plus",
+            "rd_pro",
+            "rd_mini"
+          ]
+        }
+      },
+      "request_id": {
+        "name": "request_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "style_id": {
+        "name": "style_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "style_id2": {
+        "name": "style_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "tab": {
+        "name": "tab",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "tab:image",
+            "tab:animation",
+            "tab:advanced-animation",
+            "tab:tileset"
+          ]
+        }
+      },
+      "task_id": {
+        "name": "task_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "tool_id": {
+        "name": "tool_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "tool_id2": {
+        "name": "tool_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "requestBodies": {
+      "CreateInference": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/InferenceRequest"
+            }
+          }
+        }
+      },
+      "CreateUserStyle": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateStyleRequest"
+            }
+          }
+        }
+      },
+      "EstimateEditToolCost": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EditToolRequest"
+            }
+          }
+        }
+      },
+      "FixPixelArtNeural": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PixelFixerRequest"
+            }
+          }
+        }
+      },
+      "FixPixelArtStandard": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PixelFixerRequest"
+            }
+          }
+        }
+      },
+      "RunEditTool": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EditToolRequest"
+            }
+          }
+        }
+      },
+      "UpdateUserStyle": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateStyleRequest"
             }
           }
         }

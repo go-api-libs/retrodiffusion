@@ -158,9 +158,6 @@ type Errors struct {
 	Detail ErrorDetails `json:"detail,omitempty"`
 }
 
-// GetInferenceRequestOkJSONResponse defines a model
-type GetInferenceRequestOkJSONResponse map[string]struct{}
-
 // InferenceRequest defines a model
 type InferenceRequest struct {
 	// Describe the SUBJECT only. Never write 'pixel art'.
@@ -209,6 +206,9 @@ type InferenceRequest struct {
 	Negative string `json:"negative,omitzero"`
 }
 
+// InferenceRequestResult defines a model
+type InferenceRequestResult map[string]struct{}
+
 // InferenceResponse defines a model
 type InferenceResponse struct {
 	CreatedAt   *int     `json:"created_at,omitempty"`
@@ -222,9 +222,6 @@ type InferenceResponse struct {
 	RequestID            string   `json:"request_id,omitzero"`
 	OutputsRetainedUntil *int     `json:"outputs_retained_until,omitempty"`
 }
-
-// ListAvailableStylesOkJSONResponse defines a model
-type ListAvailableStylesOkJSONResponse []StyleSelectorItem
 
 // ListEditToolsOkJSONResponse defines a model
 type ListEditToolsOkJSONResponse []map[string]struct{}
@@ -252,16 +249,16 @@ type StatusResponse struct {
 	UpdatedAt *int               `json:"updated_at,omitempty"`
 }
 
-// StyleResponse defines a model
-type StyleResponse struct {
+// Style defines a model
+type Style struct {
 	ID          string `json:"id,omitzero"`
 	PromptStyle string `json:"prompt_style,omitzero"`
 	Name        string `json:"name,omitzero"`
 	Type        string `json:"type,omitzero"`
 }
 
-// StyleSelectorItem defines a model
-type StyleSelectorItem struct {
+// StyleDescriptor defines a model
+type StyleDescriptor struct {
 	PromptStyle             string `json:"prompt_style,omitzero"`
 	Name                    string `json:"name,omitzero"`
 	Description             string `json:"description,omitzero"`
@@ -276,6 +273,9 @@ type StyleSelectorItem struct {
 	SupportsReferenceImages bool   `json:"supports_reference_images,omitempty"`
 	ExamplePrompt           string `json:"example_prompt,omitzero"`
 }
+
+// StyleDescriptors defines a model
+type StyleDescriptors []StyleDescriptor
 
 // TaskStatus defines a model
 type TaskStatus struct {
