@@ -136,7 +136,7 @@ type EditToolResponse struct {
 
 // Error defines a model
 type Error struct {
-	Detail *ErrorDetail `json:"detail,omitempty"`
+	Detail string `json:"detail,omitempty"`
 }
 
 // ErrorDetailOneOf1Item defines a model
