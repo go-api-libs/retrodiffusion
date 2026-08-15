@@ -938,11 +938,21 @@
         "type": "object",
         "oneOf": [
           {
+            "not": {
+              "required": [
+                "image_url"
+              ]
+            },
             "required": [
               "input_image"
             ]
           },
           {
+            "not": {
+              "required": [
+                "input_image"
+              ]
+            },
             "required": [
               "image_url"
             ]
@@ -951,7 +961,8 @@
         "properties": {
           "input_image": {
             "description": "Raw base64 PNG/JPEG/WebP or data URI",
-            "type": "string"
+            "type": "string",
+            "format": "base64"
           },
           "image_url": {
             "description": "Public HTTPS PNG/JPEG/WebP",
