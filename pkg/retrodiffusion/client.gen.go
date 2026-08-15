@@ -5,10 +5,10 @@
 package retrodiffusion
 
 import (
-	"bytes"
 	"context"
 	"encoding/json/v2"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -80,12 +80,24 @@ func (c *Client) CreateInference(ctx context.Context, body InferenceRequest) (*I
 //	POST /inferences
 func CreateInference[R any](ctx context.Context, c *Client, body InferenceRequest) (*R, error) {
 	u := c.baseURL.JoinPath("inferences")
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(body); err != nil {
-		return InferenceResponse{}, fmt.Errorf("encode body: %w", err)
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), &buf)
-	req.Header.Set("Content-Type", "application/json")
+	pr, pw := io.Pipe()
+	req := (&http.Request{
+		Header: http.Header{
+			"User-Agent":   []string{c.userAgent},
+			"Content-Type": []string{"application/json"},
+		},
+		Host:          u.Host,
+		Method:        http.MethodPost,
+		Proto:         "HTTP/1.1",
+		ProtoMajor:    1,
+		ProtoMinor:    1,
+		URL:           u,
+		Body:          pr,
+		ContentLength: -1,
+	}).WithContext(ctx)
+
+	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
+	defer pr.Close()
 
 	rsp, err := c.cli.Do(req)
 	if err != nil {
@@ -386,12 +398,24 @@ func (c *Client) CreateUserStyle(ctx context.Context, body CreateStyleRequest) (
 //	POST /styles
 func CreateUserStyle[R any](ctx context.Context, c *Client, body CreateStyleRequest) (*R, error) {
 	u := c.baseURL.JoinPath("styles")
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(body); err != nil {
-		return StyleResponse{}, fmt.Errorf("encode body: %w", err)
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), &buf)
-	req.Header.Set("Content-Type", "application/json")
+	pr, pw := io.Pipe()
+	req := (&http.Request{
+		Header: http.Header{
+			"User-Agent":   []string{c.userAgent},
+			"Content-Type": []string{"application/json"},
+		},
+		Host:          u.Host,
+		Method:        http.MethodPost,
+		Proto:         "HTTP/1.1",
+		ProtoMajor:    1,
+		ProtoMinor:    1,
+		URL:           u,
+		Body:          pr,
+		ContentLength: -1,
+	}).WithContext(ctx)
+
+	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
+	defer pr.Close()
 
 	rsp, err := c.cli.Do(req)
 	if err != nil {
@@ -481,12 +505,24 @@ func (c *Client) UpdateUserStyle(ctx context.Context, styleID string, body *Crea
 //	PATCH /styles/{style_id}
 func UpdateUserStyle[R any](ctx context.Context, c *Client, styleID string, body *CreateStyleRequest) (*R, error) {
 	u := c.baseURL.JoinPath("styles", styleID)
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(body); err != nil {
-		return StyleResponse{}, fmt.Errorf("encode body: %w", err)
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, u.String(), &buf)
-	req.Header.Set("Content-Type", "application/json")
+	pr, pw := io.Pipe()
+	req := (&http.Request{
+		Header: http.Header{
+			"User-Agent":   []string{c.userAgent},
+			"Content-Type": []string{"application/json"},
+		},
+		Host:          u.Host,
+		Method:        http.MethodPatch,
+		Proto:         "HTTP/1.1",
+		ProtoMajor:    1,
+		ProtoMinor:    1,
+		URL:           u,
+		Body:          pr,
+		ContentLength: -1,
+	}).WithContext(ctx)
+
+	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
+	defer pr.Close()
 
 	rsp, err := c.cli.Do(req)
 	if err != nil {
@@ -576,12 +612,24 @@ func (c *Client) RunEditTool(ctx context.Context, toolID string, body EditToolRe
 //	POST /edit/tools/{tool_id}
 func RunEditTool[R any](ctx context.Context, c *Client, toolID string, body EditToolRequest) (*R, error) {
 	u := c.baseURL.JoinPath("edit", "tools", toolID)
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(body); err != nil {
-		return EditToolResponse{}, fmt.Errorf("encode body: %w", err)
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), &buf)
-	req.Header.Set("Content-Type", "application/json")
+	pr, pw := io.Pipe()
+	req := (&http.Request{
+		Header: http.Header{
+			"User-Agent":   []string{c.userAgent},
+			"Content-Type": []string{"application/json"},
+		},
+		Host:          u.Host,
+		Method:        http.MethodPost,
+		Proto:         "HTTP/1.1",
+		ProtoMajor:    1,
+		ProtoMinor:    1,
+		URL:           u,
+		Body:          pr,
+		ContentLength: -1,
+	}).WithContext(ctx)
+
+	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
+	defer pr.Close()
 
 	rsp, err := c.cli.Do(req)
 	if err != nil {
@@ -630,12 +678,24 @@ func (c *Client) EstimateEditToolCost(ctx context.Context, toolID string, body E
 //	POST /edit/tools/{tool_id}/estimate
 func EstimateEditToolCost[R any](ctx context.Context, c *Client, toolID string, body EditToolRequest) (*R, error) {
 	u := c.baseURL.JoinPath("edit", "tools", toolID, "estimate")
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(body); err != nil {
-		return EditToolEstimate{}, fmt.Errorf("encode body: %w", err)
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), &buf)
-	req.Header.Set("Content-Type", "application/json")
+	pr, pw := io.Pipe()
+	req := (&http.Request{
+		Header: http.Header{
+			"User-Agent":   []string{c.userAgent},
+			"Content-Type": []string{"application/json"},
+		},
+		Host:          u.Host,
+		Method:        http.MethodPost,
+		Proto:         "HTTP/1.1",
+		ProtoMajor:    1,
+		ProtoMinor:    1,
+		URL:           u,
+		Body:          pr,
+		ContentLength: -1,
+	}).WithContext(ctx)
+
+	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
+	defer pr.Close()
 
 	rsp, err := c.cli.Do(req)
 	if err != nil {
@@ -675,12 +735,24 @@ func (c *Client) FixPixelArtStandard(ctx context.Context, body PixelFixerRequest
 //	POST /pixel-fixer/standard
 func FixPixelArtStandard[R any](ctx context.Context, c *Client, body PixelFixerRequest) (*R, error) {
 	u := c.baseURL.JoinPath("pixel-fixer", "standard")
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(body); err != nil {
-		return PixelFixerResponse{}, fmt.Errorf("encode body: %w", err)
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), &buf)
-	req.Header.Set("Content-Type", "application/json")
+	pr, pw := io.Pipe()
+	req := (&http.Request{
+		Header: http.Header{
+			"User-Agent":   []string{c.userAgent},
+			"Content-Type": []string{"application/json"},
+		},
+		Host:          u.Host,
+		Method:        http.MethodPost,
+		Proto:         "HTTP/1.1",
+		ProtoMajor:    1,
+		ProtoMinor:    1,
+		URL:           u,
+		Body:          pr,
+		ContentLength: -1,
+	}).WithContext(ctx)
+
+	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
+	defer pr.Close()
 
 	rsp, err := c.cli.Do(req)
 	if err != nil {
@@ -729,12 +801,24 @@ func (c *Client) FixPixelArtNeural(ctx context.Context, body PixelFixerRequest) 
 //	POST /pixel-fixer/neural
 func FixPixelArtNeural[R any](ctx context.Context, c *Client, body PixelFixerRequest) (*R, error) {
 	u := c.baseURL.JoinPath("pixel-fixer", "neural")
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(body); err != nil {
-		return PixelFixerResponse{}, fmt.Errorf("encode body: %w", err)
-	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), &buf)
-	req.Header.Set("Content-Type", "application/json")
+	pr, pw := io.Pipe()
+	req := (&http.Request{
+		Header: http.Header{
+			"User-Agent":   []string{c.userAgent},
+			"Content-Type": []string{"application/json"},
+		},
+		Host:          u.Host,
+		Method:        http.MethodPost,
+		Proto:         "HTTP/1.1",
+		ProtoMajor:    1,
+		ProtoMinor:    1,
+		URL:           u,
+		Body:          pr,
+		ContentLength: -1,
+	}).WithContext(ctx)
+
+	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
+	defer pr.Close()
 
 	rsp, err := c.cli.Do(req)
 	if err != nil {
