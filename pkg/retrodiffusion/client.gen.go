@@ -70,8 +70,8 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 // Main generation endpoint. Set check_cost=true for free price estimate. Set async=true for long-running jobs (animations/batches). Use upload_outputs=true for signed URLs.
 //
 //	POST /inferences
-func (c *Client) CreateInference(ctx context.Context, body InferenceRequest) (*InferenceResponse, error) {
-	return CreateInference[InferenceResponse](ctx, c, body)
+func (c *Client) CreateInference(ctx context.Context, body InferenceRequest) (*Inference, error) {
+	return CreateInference[Inference](ctx, c, body)
 }
 
 // Main generation endpoint. Set check_cost=true for free price estimate. Set async=true for long-running jobs (animations/batches). Use upload_outputs=true for signed URLs.

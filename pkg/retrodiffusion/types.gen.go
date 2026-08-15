@@ -158,6 +158,20 @@ type Errors struct {
 	Detail ErrorDetails `json:"detail,omitempty"`
 }
 
+// Inference defines a model
+type Inference struct {
+	CreatedAt   *int     `json:"created_at,omitempty"`
+	BalanceCost *float64 `json:"balance_cost,omitempty"`
+	// Raw base64 PNG (or GIF for animations)
+	Base64Images []string `json:"base64_images,omitempty"`
+	// 15-minute signed URLs when upload_outputs=true
+	OutputUrls           []string `json:"output_urls,omitempty"`
+	Model                string   `json:"model,omitzero"`
+	RemainingBalance     *float64 `json:"remaining_balance,omitempty"`
+	RequestID            string   `json:"request_id,omitzero"`
+	OutputsRetainedUntil *int     `json:"outputs_retained_until,omitempty"`
+}
+
 // InferenceRequest defines a model
 type InferenceRequest struct {
 	// Describe the SUBJECT only. Never write 'pixel art'.
@@ -208,20 +222,6 @@ type InferenceRequest struct {
 
 // InferenceRequestResult defines a model
 type InferenceRequestResult map[string]struct{}
-
-// InferenceResponse defines a model
-type InferenceResponse struct {
-	CreatedAt   *int     `json:"created_at,omitempty"`
-	BalanceCost *float64 `json:"balance_cost,omitempty"`
-	// Raw base64 PNG (or GIF for animations)
-	Base64Images []string `json:"base64_images,omitempty"`
-	// 15-minute signed URLs when upload_outputs=true
-	OutputUrls           []string `json:"output_urls,omitempty"`
-	Model                string   `json:"model,omitzero"`
-	RemainingBalance     *float64 `json:"remaining_balance,omitempty"`
-	RequestID            string   `json:"request_id,omitzero"`
-	OutputsRetainedUntil *int     `json:"outputs_retained_until,omitempty"`
-}
 
 // ListEditToolsOkJSONResponse defines a model
 type ListEditToolsOkJSONResponse []map[string]struct{}
@@ -279,10 +279,10 @@ type StyleDescriptors []StyleDescriptor
 
 // TaskStatus defines a model
 type TaskStatus struct {
-	Status TaskStatusStatus   `json:"status,omitzero"`
-	TaskID string             `json:"task_id,omitzero"`
-	Result *InferenceResponse `json:"result,omitempty"`
-	Err    *TaskStatusError   `json:"error,omitempty"`
+	Status TaskStatusStatus `json:"status,omitzero"`
+	TaskID string           `json:"task_id,omitzero"`
+	Result *Inference       `json:"result,omitempty"`
+	Err    *TaskStatusError `json:"error,omitempty"`
 }
 
 // TaskStatusError defines a model

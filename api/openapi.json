@@ -25,7 +25,7 @@
         },
         "responses": {
           "200": {
-            "$ref": "#/components/responses/InferenceResponse"
+            "$ref": "#/components/responses/Inference"
           },
           "202": {
             "$ref": "#/components/responses/AsyncAccepted"
@@ -566,6 +566,43 @@
           }
         }
       },
+      "Inference": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "integer"
+          },
+          "balance_cost": {
+            "type": "number"
+          },
+          "base64_images": {
+            "description": "Raw base64 PNG (or GIF for animations)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "output_urls": {
+            "description": "15-minute signed URLs when upload_outputs=true",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "model": {
+            "type": "string"
+          },
+          "remaining_balance": {
+            "type": "number"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "outputs_retained_until": {
+            "type": "integer"
+          }
+        }
+      },
       "InferenceRequest": {
         "type": "object",
         "properties": {
@@ -694,43 +731,6 @@
         "type": "object",
         "additionalProperties": {
           "type": "object"
-        }
-      },
-      "InferenceResponse": {
-        "type": "object",
-        "properties": {
-          "created_at": {
-            "type": "integer"
-          },
-          "balance_cost": {
-            "type": "number"
-          },
-          "base64_images": {
-            "description": "Raw base64 PNG (or GIF for animations)",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "output_urls": {
-            "description": "15-minute signed URLs when upload_outputs=true",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "model": {
-            "type": "string"
-          },
-          "remaining_balance": {
-            "type": "number"
-          },
-          "request_id": {
-            "type": "string"
-          },
-          "outputs_retained_until": {
-            "type": "integer"
-          }
         }
       },
       "ListEditToolsOkJSONResponse": {
@@ -870,7 +870,7 @@
             "type": "string"
           },
           "result": {
-            "$ref": "#/components/schemas/InferenceResponse"
+            "$ref": "#/components/schemas/Inference"
           },
           "error": {
             "$ref": "#/components/schemas/TaskStatusError"
@@ -1000,22 +1000,22 @@
           }
         }
       },
+      "Inference": {
+        "description": "Sync success or check_cost result",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Inference"
+            }
+          }
+        }
+      },
       "InferenceRequest": {
         "description": "Request details + signed URLs",
         "content": {
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/InferenceRequestResult"
-            }
-          }
-        }
-      },
-      "InferenceResponse": {
-        "description": "Sync success or check_cost result",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/InferenceResponse"
             }
           }
         }
