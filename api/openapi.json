@@ -1,0 +1,866 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Retro Diffusion API",
+    "description": "Pixel art image generation API. Base URL: https://api.retrodiffusion.ai/v1. Auth via X-RD-Token header (keys start with rdpk-). Prefer MCP if available at https://mcp.retrodiffusion.ai/mcp. Style catalog and limits live; use GET /styles/selector for current values. Prompts describe SUBJECT only — never write 'pixel art'. Models ignore 'negative' field.",
+    "version": "1.0.0",
+    "contact": {
+      "url": "https://www.retrodiffusion.ai"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.retrodiffusion.ai/v1",
+      "description": "Production"
+    }
+  ],
+  "security": [
+    {
+      "XRdToken": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "XRdToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-RD-Token",
+        "description": "API key starting with rdpk-. Create at https://www.retrodiffusion.ai/app/devtools (max 5 per account)."
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "code": { "type": "string" },
+                  "message": { "type": "string" }
+                }
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "msg": { "type": "string" }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "InferenceRequest": {
+        "type": "object",
+        "required": ["prompt", "prompt_style", "width", "height", "num_images"],
+        "properties": {
+          "prompt": {
+            "type": "string",
+            "description": "Describe the SUBJECT only. Never write 'pixel art'."
+          },
+          "prompt_style": {
+            "type": "string",
+            "description": "Style id e.g. rd_fast__default, rd_pro__default, rd_plus__default, animation/tile variants, or user__name_id"
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 16,
+            "maximum": 512,
+            "description": "Style-enforced tighter limits apply (most top out at 384)"
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 16,
+            "maximum": 512
+          },
+          "num_images": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "seed": {
+            "type": "integer",
+            "description": "Reproducible generation"
+          },
+          "input_image": {
+            "type": "string",
+            "description": "Raw base64 PNG (no data: URI prefix), RGB no transparency. Required for img2img, advanced animation, some edit tools."
+          },
+          "strength": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.75,
+            "description": "How much to change input_image"
+          },
+          "reference_images": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 9,
+            "description": "Base64 images. RD Pro styles only. Guides style/content."
+          },
+          "input_palette": {
+            "type": "string",
+            "description": "Base64 palette constraining output colors"
+          },
+          "remove_bg": {
+            "type": "boolean",
+            "description": "Transparent output"
+          },
+          "tile_x": { "type": "boolean" },
+          "tile_y": { "type": "boolean" },
+          "frames_duration": {
+            "type": "integer",
+            "enum": [4, 6, 8, 10, 12, 16],
+            "description": "Animation styles only"
+          },
+          "return_spritesheet": {
+            "type": "boolean",
+            "description": "Animations: PNG spritesheet instead of GIF"
+          },
+          "upscale_output_factor": {
+            "type": "integer",
+            "description": "1 = native pixel size"
+          },
+          "bypass_prompt_expansion": {
+            "type": "boolean",
+            "description": "Skip automatic LLM prompt enrichment"
+          },
+          "include_downloadable_data": {
+            "type": "boolean",
+            "description": "Extra structured assets e.g. item atlas JSON"
+          },
+          "check_cost": {
+            "type": "boolean",
+            "description": "FREE dry run: returns price, generates nothing, charges nothing"
+          },
+          "async": {
+            "type": "boolean",
+            "description": "Return task_id for polling instead of waiting"
+          },
+          "upload_outputs": {
+            "type": "boolean",
+            "description": "Receive temporary signed URLs in output_urls instead of (or with) base64"
+          },
+          "extra_prompt": {
+            "type": "string",
+            "description": "For advanced tileset styles"
+          },
+          "extra_input_image": {
+            "type": "string",
+            "description": "For advanced tileset styles"
+          },
+          "negative": {
+            "type": "string",
+            "description": "Placeholder — current models ignore it. Do not rely on it."
+          }
+        }
+      },
+      "InferenceResponse": {
+        "type": "object",
+        "properties": {
+          "created_at": { "type": "integer" },
+          "balance_cost": { "type": "number" },
+          "base64_images": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Raw base64 PNG (or GIF for animations)"
+          },
+          "output_urls": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "15-minute signed URLs when upload_outputs=true"
+          },
+          "model": { "type": "string" },
+          "remaining_balance": { "type": "number" },
+          "request_id": { "type": "string" },
+          "outputs_retained_until": { "type": "integer" }
+        }
+      },
+      "AsyncAccepted": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "accepted" },
+          "task_id": { "type": "string" },
+          "request_id": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      },
+      "TaskStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["pending", "running", "succeeded", "failed"]
+          },
+          "task_id": { "type": "string" },
+          "result": {
+            "$ref": "#/components/schemas/InferenceResponse"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "status_code": { "type": "integer" },
+              "detail": { "type": "string" }
+            }
+          }
+        }
+      },
+      "CreditsResponse": {
+        "type": "object",
+        "properties": {
+          "credits": { "type": "number" },
+          "balance": { "type": "number" }
+        }
+      },
+      "StatusResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "object",
+            "additionalProperties": { "type": "string" }
+          },
+          "updated_at": { "type": "integer" }
+        }
+      },
+      "StyleSelectorItem": {
+        "type": "object",
+        "properties": {
+          "prompt_style": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "required_model": { "type": "string" },
+          "required_tab": { "type": "string" },
+          "min_width": { "type": "integer" },
+          "max_width": { "type": "integer" },
+          "min_height": { "type": "integer" },
+          "max_height": { "type": "integer" },
+          "max_number_of_images": { "type": "integer" },
+          "require_input_image": { "type": "boolean" },
+          "supports_reference_images": { "type": "boolean" },
+          "example_prompt": { "type": "string" }
+        }
+      },
+      "CreateStyleRequest": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "style_icon": { "type": "string" },
+          "reference_images": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 1
+          },
+          "reference_caption": { "type": "string" },
+          "apply_prompt_fixer": { "type": "boolean", "default": true },
+          "llm_instructions": { "type": "string" },
+          "user_prompt_template": {
+            "type": "string",
+            "description": "Must contain the token {prompt}"
+          },
+          "force_palette": { "type": "boolean" },
+          "force_bg_removal": { "type": "boolean" },
+          "min_width": { "type": "integer", "minimum": 64, "maximum": 256 },
+          "min_height": { "type": "integer", "minimum": 64, "maximum": 256 }
+        }
+      },
+      "StyleResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "prompt_style": { "type": "string" },
+          "name": { "type": "string" },
+          "type": { "type": "string", "example": "user" }
+        }
+      },
+      "EditToolRequest": {
+        "type": "object",
+        "required": ["input_image"],
+        "properties": {
+          "input_image": {
+            "type": "string",
+            "description": "Raw base64 or data:image/...;base64 data URI"
+          },
+          "custom_id": {
+            "type": "string",
+            "description": "For correlating runs with your queue (not idempotency key)"
+          },
+          "prompt": { "type": "string" },
+          "seed": { "type": "integer" },
+          "mask_image": {
+            "type": "string",
+            "description": "For inpainting. RGBA PNG preferred: alpha 0 protects, alpha >12 selects. Grayscale also accepted."
+          },
+          "soft_inpaint": { "type": "boolean" },
+          "expand_left": { "type": "integer" },
+          "expand_right": { "type": "integer" },
+          "expand_top": { "type": "integer" },
+          "expand_bottom": { "type": "integer" },
+          "tile_x": { "type": "boolean" },
+          "tile_y": { "type": "boolean" },
+          "seam_width": { "type": "integer" },
+          "repair_window_size": { "type": "integer" },
+          "transparency_threshold": { "type": "number" },
+          "force_solid_pixels": { "type": "boolean" },
+          "extra_input_image": { "type": "string" },
+          "color_count": { "type": "integer" },
+          "dither_mode": {
+            "type": "string",
+            "enum": ["none", "bayer_2x2", "bayer_4x4", "bayer_8x8"]
+          },
+          "dither_strength": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "input_palette": { "type": "string" },
+          "width": { "type": "integer" },
+          "height": { "type": "integer" },
+          "rotation_degrees": { "type": "integer" }
+        }
+      },
+      "EditToolResponse": {
+        "type": "object",
+        "properties": {
+          "tool_id": { "type": "string" },
+          "inference_id": { "type": "string" },
+          "base64_images": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "output_urls": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "balance_cost": { "type": "number" },
+          "credit_cost": { "type": "number", "nullable": true },
+          "charged": { "type": "boolean" },
+          "remaining_balance": { "type": "number" }
+        }
+      },
+      "EditToolEstimate": {
+        "type": "object",
+        "properties": {
+          "tool_id": { "type": "string" },
+          "balance_cost": { "type": "number" },
+          "credit_cost": { "type": "number" },
+          "estimate_seconds": { "type": "number" }
+        }
+      },
+      "PixelFixerRequest": {
+        "type": "object",
+        "properties": {
+          "input_image": {
+            "type": "string",
+            "description": "Raw base64 PNG/JPEG/WebP or data URI"
+          },
+          "image_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Public HTTPS PNG/JPEG/WebP"
+          },
+          "width": {
+            "type": "integer",
+            "description": "Neural only: target output width"
+          },
+          "height": {
+            "type": "integer",
+            "description": "Neural only: target output height"
+          }
+        },
+        "oneOf": [
+          { "required": ["input_image"] },
+          { "required": ["image_url"] }
+        ]
+      },
+      "PixelFixerResponse": {
+        "type": "object",
+        "properties": {
+          "base64_images": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "maxItems": 1
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/inferences": {
+      "post": {
+        "summary": "Generate images (sync or async)",
+        "description": "Main generation endpoint. Set check_cost=true for free price estimate. Set async=true for long-running jobs (animations/batches). Use upload_outputs=true for signed URLs.",
+        "operationId": "createInference",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InferenceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sync success or check_cost result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InferenceResponse"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Async accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AsyncAccepted"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or insufficient balance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing/invalid X-RD-Token"
+          },
+          "422": {
+            "description": "Body failed validation"
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "500": {
+            "description": "Temporary failure (charges refunded)"
+          }
+        }
+      }
+    },
+    "/inferences/tasks/{task_id}": {
+      "get": {
+        "summary": "Poll async inference job",
+        "operationId": "getInferenceJob",
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaskStatus"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Task not found or not owned"
+          }
+        }
+      }
+    },
+    "/inferences/requests/{request_id}": {
+      "get": {
+        "summary": "Retrieve generation during 24h retention window",
+        "description": "Returns status, settings, billing, and freshly signed output URLs. Any active personal key from owning account may retrieve after key rotation.",
+        "operationId": "getInferenceRequest",
+        "parameters": [
+          {
+            "name": "request_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request details + signed URLs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown, non-owned, or expired"
+          }
+        }
+      }
+    },
+    "/inferences/credits": {
+      "get": {
+        "summary": "Get balance and credits",
+        "operationId": "getBalance",
+        "responses": {
+          "200": {
+            "description": "Current balance",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditsResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Invalid token"
+          }
+        }
+      }
+    },
+    "/styles/selector": {
+      "get": {
+        "summary": "Live style catalog with limits",
+        "operationId": "listAvailableStyles",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["rd_fast", "rd_plus", "rd_pro", "rd_mini"]
+            }
+          },
+          {
+            "name": "tab",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["tab:image", "tab:animation", "tab:advanced-animation", "tab:tileset"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of style descriptors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StyleSelectorItem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/styles": {
+      "post": {
+        "summary": "Create custom user style (RD Pro reference template)",
+        "operationId": "createUserStyle",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStyleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Style created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StyleResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/styles/{style_id}": {
+      "patch": {
+        "summary": "Update user style",
+        "operationId": "updateUserStyle",
+        "parameters": [
+          {
+            "name": "style_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStyleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StyleResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete user style",
+        "operationId": "deleteUserStyle",
+        "parameters": [
+          {
+            "name": "style_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "deleted": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/edit/tools": {
+      "get": {
+        "summary": "List enabled canvas edit tools",
+        "operationId": "listEditTools",
+        "responses": {
+          "200": {
+            "description": "Tool list with costs, limits, api_fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/edit/tools/{tool_id}": {
+      "post": {
+        "summary": "Run edit tool",
+        "description": "Tools: image_edit, inpainting, outpainting, seam_tiling, background_remover, color_style_transfer, color_reducer, palette_converter, k_centroid_downscale, pixel_correction, rotate. Free tools may require min balance $0.01.",
+        "operationId": "runEditTool",
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditToolRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tool result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EditToolResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Semantically invalid or insufficient balance"
+          },
+          "404": {
+            "description": "Unknown/disabled tool"
+          },
+          "422": {
+            "description": "Schema mismatch"
+          }
+        }
+      }
+    },
+    "/edit/tools/{tool_id}/estimate": {
+      "post": {
+        "summary": "Estimate edit tool cost (no run)",
+        "operationId": "estimateEditToolCost",
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EditToolRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cost estimate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EditToolEstimate"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pixel-fixer/standard": {
+      "post": {
+        "summary": "Pixel Fixer Standard (free native-grid reconstruction)",
+        "description": "Native Rust grid detection. 16x16 to 16 megapixels. Rate limits: 120/min with purchase history, else 10/min. Shared with neural.",
+        "operationId": "fixPixelArtStandard",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PixelFixerRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Fixed image",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PixelFixerResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request or output too large"
+          },
+          "422": {
+            "description": "Invalid image"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        }
+      }
+    },
+    "/pixel-fixer/neural": {
+      "post": {
+        "summary": "Pixel Fixer Neural (free neural reconstruction)",
+        "description": "Accepts larger sources, bilinear-downscales above 1MP budget. Optional width/height target (capped 16MP).",
+        "operationId": "fixPixelArtNeural",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PixelFixerRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Fixed image",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PixelFixerResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Request or output too large"
+          },
+          "422": {
+            "description": "Invalid image"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        }
+      }
+    },
+    "/status": {
+      "get": {
+        "summary": "Service status (no auth)",
+        "operationId": "getServiceStatus",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Per-model status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
