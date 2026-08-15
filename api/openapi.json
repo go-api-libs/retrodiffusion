@@ -3,10 +3,10 @@
   "info": {
     "title": "Retro Diffusion API",
     "description": "Pixel art image generation API. Base URL: https://api.retrodiffusion.ai/v1. Auth via X-RD-Token header (keys start with rdpk-). Prefer MCP if available at https://mcp.retrodiffusion.ai/mcp. Style catalog and limits live; use GET /styles/selector for current values. Prompts describe SUBJECT only — never write 'pixel art'. Models ignore 'negative' field.",
-    "version": "1.0.0",
     "contact": {
       "url": "https://www.retrodiffusion.ai"
-    }
+    },
+    "version": "1.0.0"
   },
   "servers": [
     {
@@ -14,383 +14,6 @@
       "description": "Production"
     }
   ],
-  "security": [
-    {
-      "XRdToken": []
-    }
-  ],
-  "components": {
-    "securitySchemes": {
-      "XRdToken": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "X-RD-Token",
-        "description": "API key starting with rdpk-. Create at https://www.retrodiffusion.ai/app/devtools (max 5 per account)."
-      }
-    },
-    "schemas": {
-      "Error": {
-        "type": "object",
-        "properties": {
-          "detail": {
-            "oneOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "code": { "type": "string" },
-                  "message": { "type": "string" }
-                }
-              },
-              {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "msg": { "type": "string" }
-                  }
-                }
-              }
-            ]
-          }
-        }
-      },
-      "InferenceRequest": {
-        "type": "object",
-        "required": ["prompt", "prompt_style", "width", "height", "num_images"],
-        "properties": {
-          "prompt": {
-            "type": "string",
-            "description": "Describe the SUBJECT only. Never write 'pixel art'."
-          },
-          "prompt_style": {
-            "type": "string",
-            "description": "Style id e.g. rd_fast__default, rd_pro__default, rd_plus__default, animation/tile variants, or user__name_id"
-          },
-          "width": {
-            "type": "integer",
-            "minimum": 16,
-            "maximum": 512,
-            "description": "Style-enforced tighter limits apply (most top out at 384)"
-          },
-          "height": {
-            "type": "integer",
-            "minimum": 16,
-            "maximum": 512
-          },
-          "num_images": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "seed": {
-            "type": "integer",
-            "description": "Reproducible generation"
-          },
-          "input_image": {
-            "type": "string",
-            "description": "Raw base64 PNG (no data: URI prefix), RGB no transparency. Required for img2img, advanced animation, some edit tools."
-          },
-          "strength": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 1,
-            "default": 0.75,
-            "description": "How much to change input_image"
-          },
-          "reference_images": {
-            "type": "array",
-            "items": { "type": "string" },
-            "maxItems": 9,
-            "description": "Base64 images. RD Pro styles only. Guides style/content."
-          },
-          "input_palette": {
-            "type": "string",
-            "description": "Base64 palette constraining output colors"
-          },
-          "remove_bg": {
-            "type": "boolean",
-            "description": "Transparent output"
-          },
-          "tile_x": { "type": "boolean" },
-          "tile_y": { "type": "boolean" },
-          "frames_duration": {
-            "type": "integer",
-            "enum": [4, 6, 8, 10, 12, 16],
-            "description": "Animation styles only"
-          },
-          "return_spritesheet": {
-            "type": "boolean",
-            "description": "Animations: PNG spritesheet instead of GIF"
-          },
-          "upscale_output_factor": {
-            "type": "integer",
-            "description": "1 = native pixel size"
-          },
-          "bypass_prompt_expansion": {
-            "type": "boolean",
-            "description": "Skip automatic LLM prompt enrichment"
-          },
-          "include_downloadable_data": {
-            "type": "boolean",
-            "description": "Extra structured assets e.g. item atlas JSON"
-          },
-          "check_cost": {
-            "type": "boolean",
-            "description": "FREE dry run: returns price, generates nothing, charges nothing"
-          },
-          "async": {
-            "type": "boolean",
-            "description": "Return task_id for polling instead of waiting"
-          },
-          "upload_outputs": {
-            "type": "boolean",
-            "description": "Receive temporary signed URLs in output_urls instead of (or with) base64"
-          },
-          "extra_prompt": {
-            "type": "string",
-            "description": "For advanced tileset styles"
-          },
-          "extra_input_image": {
-            "type": "string",
-            "description": "For advanced tileset styles"
-          },
-          "negative": {
-            "type": "string",
-            "description": "Placeholder — current models ignore it. Do not rely on it."
-          }
-        }
-      },
-      "InferenceResponse": {
-        "type": "object",
-        "properties": {
-          "created_at": { "type": "integer" },
-          "balance_cost": { "type": "number" },
-          "base64_images": {
-            "type": "array",
-            "items": { "type": "string" },
-            "description": "Raw base64 PNG (or GIF for animations)"
-          },
-          "output_urls": {
-            "type": "array",
-            "items": { "type": "string" },
-            "description": "15-minute signed URLs when upload_outputs=true"
-          },
-          "model": { "type": "string" },
-          "remaining_balance": { "type": "number" },
-          "request_id": { "type": "string" },
-          "outputs_retained_until": { "type": "integer" }
-        }
-      },
-      "AsyncAccepted": {
-        "type": "object",
-        "properties": {
-          "status": { "type": "string", "example": "accepted" },
-          "task_id": { "type": "string" },
-          "request_id": { "type": "string" },
-          "message": { "type": "string" }
-        }
-      },
-      "TaskStatus": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string",
-            "enum": ["pending", "running", "succeeded", "failed"]
-          },
-          "task_id": { "type": "string" },
-          "result": {
-            "$ref": "#/components/schemas/InferenceResponse"
-          },
-          "error": {
-            "type": "object",
-            "properties": {
-              "status_code": { "type": "integer" },
-              "detail": { "type": "string" }
-            }
-          }
-        }
-      },
-      "CreditsResponse": {
-        "type": "object",
-        "properties": {
-          "credits": { "type": "number" },
-          "balance": { "type": "number" }
-        }
-      },
-      "StatusResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "object",
-            "additionalProperties": { "type": "string" }
-          },
-          "updated_at": { "type": "integer" }
-        }
-      },
-      "StyleSelectorItem": {
-        "type": "object",
-        "properties": {
-          "prompt_style": { "type": "string" },
-          "name": { "type": "string" },
-          "description": { "type": "string" },
-          "required_model": { "type": "string" },
-          "required_tab": { "type": "string" },
-          "min_width": { "type": "integer" },
-          "max_width": { "type": "integer" },
-          "min_height": { "type": "integer" },
-          "max_height": { "type": "integer" },
-          "max_number_of_images": { "type": "integer" },
-          "require_input_image": { "type": "boolean" },
-          "supports_reference_images": { "type": "boolean" },
-          "example_prompt": { "type": "string" }
-        }
-      },
-      "CreateStyleRequest": {
-        "type": "object",
-        "required": ["name"],
-        "properties": {
-          "name": { "type": "string" },
-          "description": { "type": "string" },
-          "style_icon": { "type": "string" },
-          "reference_images": {
-            "type": "array",
-            "items": { "type": "string" },
-            "maxItems": 1
-          },
-          "reference_caption": { "type": "string" },
-          "apply_prompt_fixer": { "type": "boolean", "default": true },
-          "llm_instructions": { "type": "string" },
-          "user_prompt_template": {
-            "type": "string",
-            "description": "Must contain the token {prompt}"
-          },
-          "force_palette": { "type": "boolean" },
-          "force_bg_removal": { "type": "boolean" },
-          "min_width": { "type": "integer", "minimum": 64, "maximum": 256 },
-          "min_height": { "type": "integer", "minimum": 64, "maximum": 256 }
-        }
-      },
-      "StyleResponse": {
-        "type": "object",
-        "properties": {
-          "id": { "type": "string" },
-          "prompt_style": { "type": "string" },
-          "name": { "type": "string" },
-          "type": { "type": "string", "example": "user" }
-        }
-      },
-      "EditToolRequest": {
-        "type": "object",
-        "required": ["input_image"],
-        "properties": {
-          "input_image": {
-            "type": "string",
-            "description": "Raw base64 or data:image/...;base64 data URI"
-          },
-          "custom_id": {
-            "type": "string",
-            "description": "For correlating runs with your queue (not idempotency key)"
-          },
-          "prompt": { "type": "string" },
-          "seed": { "type": "integer" },
-          "mask_image": {
-            "type": "string",
-            "description": "For inpainting. RGBA PNG preferred: alpha 0 protects, alpha >12 selects. Grayscale also accepted."
-          },
-          "soft_inpaint": { "type": "boolean" },
-          "expand_left": { "type": "integer" },
-          "expand_right": { "type": "integer" },
-          "expand_top": { "type": "integer" },
-          "expand_bottom": { "type": "integer" },
-          "tile_x": { "type": "boolean" },
-          "tile_y": { "type": "boolean" },
-          "seam_width": { "type": "integer" },
-          "repair_window_size": { "type": "integer" },
-          "transparency_threshold": { "type": "number" },
-          "force_solid_pixels": { "type": "boolean" },
-          "extra_input_image": { "type": "string" },
-          "color_count": { "type": "integer" },
-          "dither_mode": {
-            "type": "string",
-            "enum": ["none", "bayer_2x2", "bayer_4x4", "bayer_8x8"]
-          },
-          "dither_strength": {
-            "type": "integer",
-            "minimum": 0,
-            "maximum": 100
-          },
-          "input_palette": { "type": "string" },
-          "width": { "type": "integer" },
-          "height": { "type": "integer" },
-          "rotation_degrees": { "type": "integer" }
-        }
-      },
-      "EditToolResponse": {
-        "type": "object",
-        "properties": {
-          "tool_id": { "type": "string" },
-          "inference_id": { "type": "string" },
-          "base64_images": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
-          "output_urls": {
-            "type": "array",
-            "items": { "type": "string" }
-          },
-          "balance_cost": { "type": "number" },
-          "credit_cost": { "type": "number", "nullable": true },
-          "charged": { "type": "boolean" },
-          "remaining_balance": { "type": "number" }
-        }
-      },
-      "EditToolEstimate": {
-        "type": "object",
-        "properties": {
-          "tool_id": { "type": "string" },
-          "balance_cost": { "type": "number" },
-          "credit_cost": { "type": "number" },
-          "estimate_seconds": { "type": "number" }
-        }
-      },
-      "PixelFixerRequest": {
-        "type": "object",
-        "properties": {
-          "input_image": {
-            "type": "string",
-            "description": "Raw base64 PNG/JPEG/WebP or data URI"
-          },
-          "image_url": {
-            "type": "string",
-            "format": "uri",
-            "description": "Public HTTPS PNG/JPEG/WebP"
-          },
-          "width": {
-            "type": "integer",
-            "description": "Neural only: target output width"
-          },
-          "height": {
-            "type": "integer",
-            "description": "Neural only: target output height"
-          }
-        },
-        "oneOf": [
-          { "required": ["input_image"] },
-          { "required": ["image_url"] }
-        ]
-      },
-      "PixelFixerResponse": {
-        "type": "object",
-        "properties": {
-          "base64_images": {
-            "type": "array",
-            "items": { "type": "string" },
-            "minItems": 1,
-            "maxItems": 1
-          }
-        }
-      }
-    }
-  },
   "paths": {
     "/inferences": {
       "post": {
@@ -462,7 +85,9 @@
             "name": "task_id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -492,7 +117,9 @@
             "name": "request_id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -502,7 +129,9 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "additionalProperties": true
+                  "additionalProperties": {
+                    "type": "object"
+                  }
                 }
               }
             }
@@ -544,7 +173,12 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["rd_fast", "rd_plus", "rd_pro", "rd_mini"]
+              "enum": [
+                "rd_fast",
+                "rd_plus",
+                "rd_pro",
+                "rd_mini"
+              ]
             }
           },
           {
@@ -552,7 +186,12 @@
             "in": "query",
             "schema": {
               "type": "string",
-              "enum": ["tab:image", "tab:animation", "tab:advanced-animation", "tab:tileset"]
+              "enum": [
+                "tab:image",
+                "tab:animation",
+                "tab:advanced-animation",
+                "tab:tileset"
+              ]
             }
           }
         ],
@@ -602,6 +241,37 @@
       }
     },
     "/styles/{style_id}": {
+      "delete": {
+        "summary": "Delete user style",
+        "operationId": "deleteUserStyle",
+        "parameters": [
+          {
+            "name": "style_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Deleted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "deleted": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "patch": {
         "summary": "Update user style",
         "operationId": "updateUserStyle",
@@ -610,7 +280,9 @@
             "name": "style_id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -634,33 +306,6 @@
             }
           }
         }
-      },
-      "delete": {
-        "summary": "Delete user style",
-        "operationId": "deleteUserStyle",
-        "parameters": [
-          {
-            "name": "style_id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "string" }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Deleted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "deleted": { "type": "boolean" }
-                  }
-                }
-              }
-            }
-          }
-        }
       }
     },
     "/edit/tools": {
@@ -676,7 +321,9 @@
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "additionalProperties": true
+                    "additionalProperties": {
+                      "type": "object"
+                    }
                   }
                 }
               }
@@ -695,7 +342,9 @@
             "name": "tool_id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -740,7 +389,9 @@
             "name": "tool_id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -847,7 +498,6 @@
       "get": {
         "summary": "Service status (no auth)",
         "operationId": "getServiceStatus",
-        "security": [],
         "responses": {
           "200": {
             "description": "Per-model status",
@@ -862,5 +512,595 @@
         }
       }
     }
-  }
+  },
+  "components": {
+    "schemas": {
+      "AsyncAccepted": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "accepted"
+          },
+          "task_id": {
+            "type": "string"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateStyleRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "style_icon": {
+            "type": "string"
+          },
+          "reference_images": {
+            "type": "array",
+            "maxItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "reference_caption": {
+            "type": "string"
+          },
+          "apply_prompt_fixer": {
+            "type": "boolean",
+            "default": true
+          },
+          "llm_instructions": {
+            "type": "string"
+          },
+          "user_prompt_template": {
+            "description": "Must contain the token {prompt}",
+            "type": "string"
+          },
+          "force_palette": {
+            "type": "boolean"
+          },
+          "force_bg_removal": {
+            "type": "boolean"
+          },
+          "min_width": {
+            "type": "integer",
+            "minimum": 64,
+            "maximum": 256
+          },
+          "min_height": {
+            "type": "integer",
+            "minimum": 64,
+            "maximum": 256
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "CreditsResponse": {
+        "type": "object",
+        "properties": {
+          "credits": {
+            "type": "number"
+          },
+          "balance": {
+            "type": "number"
+          }
+        }
+      },
+      "EditToolEstimate": {
+        "type": "object",
+        "properties": {
+          "tool_id": {
+            "type": "string"
+          },
+          "balance_cost": {
+            "type": "number"
+          },
+          "credit_cost": {
+            "type": "number"
+          },
+          "estimate_seconds": {
+            "type": "number"
+          }
+        }
+      },
+      "EditToolRequest": {
+        "type": "object",
+        "properties": {
+          "input_image": {
+            "description": "Raw base64 or data:image/...;base64 data URI",
+            "type": "string"
+          },
+          "custom_id": {
+            "description": "For correlating runs with your queue (not idempotency key)",
+            "type": "string"
+          },
+          "prompt": {
+            "type": "string"
+          },
+          "seed": {
+            "type": "integer"
+          },
+          "mask_image": {
+            "description": "For inpainting. RGBA PNG preferred: alpha 0 protects, alpha >12 selects. Grayscale also accepted.",
+            "type": "string"
+          },
+          "soft_inpaint": {
+            "type": "boolean"
+          },
+          "expand_left": {
+            "type": "integer"
+          },
+          "expand_right": {
+            "type": "integer"
+          },
+          "expand_top": {
+            "type": "integer"
+          },
+          "expand_bottom": {
+            "type": "integer"
+          },
+          "tile_x": {
+            "type": "boolean"
+          },
+          "tile_y": {
+            "type": "boolean"
+          },
+          "seam_width": {
+            "type": "integer"
+          },
+          "repair_window_size": {
+            "type": "integer"
+          },
+          "transparency_threshold": {
+            "type": "number"
+          },
+          "force_solid_pixels": {
+            "type": "boolean"
+          },
+          "extra_input_image": {
+            "type": "string"
+          },
+          "color_count": {
+            "type": "integer"
+          },
+          "dither_mode": {
+            "type": "string",
+            "enum": [
+              "none",
+              "bayer_2x2",
+              "bayer_4x4",
+              "bayer_8x8"
+            ]
+          },
+          "dither_strength": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "input_palette": {
+            "type": "string"
+          },
+          "width": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "rotation_degrees": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "input_image"
+        ]
+      },
+      "EditToolResponse": {
+        "type": "object",
+        "properties": {
+          "tool_id": {
+            "type": "string"
+          },
+          "inference_id": {
+            "type": "string"
+          },
+          "base64_images": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "output_urls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "balance_cost": {
+            "type": "number"
+          },
+          "credit_cost": {
+            "type": "number",
+            "nullable": true
+          },
+          "charged": {
+            "type": "boolean"
+          },
+          "remaining_balance": {
+            "type": "number"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "detail": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "msg": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      "InferenceRequest": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "description": "Describe the SUBJECT only. Never write 'pixel art'.",
+            "type": "string"
+          },
+          "prompt_style": {
+            "description": "Style id e.g. rd_fast__default, rd_pro__default, rd_plus__default, animation/tile variants, or user__name_id",
+            "type": "string"
+          },
+          "width": {
+            "description": "Style-enforced tighter limits apply (most top out at 384)",
+            "type": "integer",
+            "minimum": 16,
+            "maximum": 512
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 16,
+            "maximum": 512
+          },
+          "num_images": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "seed": {
+            "description": "Reproducible generation",
+            "type": "integer"
+          },
+          "input_image": {
+            "description": "Raw base64 PNG (no data: URI prefix), RGB no transparency. Required for img2img, advanced animation, some edit tools.",
+            "type": "string"
+          },
+          "strength": {
+            "description": "How much to change input_image",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.75
+          },
+          "reference_images": {
+            "description": "Base64 images. RD Pro styles only. Guides style/content.",
+            "type": "array",
+            "maxItems": 9,
+            "items": {
+              "type": "string"
+            }
+          },
+          "input_palette": {
+            "description": "Base64 palette constraining output colors",
+            "type": "string"
+          },
+          "remove_bg": {
+            "description": "Transparent output",
+            "type": "boolean"
+          },
+          "tile_x": {
+            "type": "boolean"
+          },
+          "tile_y": {
+            "type": "boolean"
+          },
+          "frames_duration": {
+            "description": "Animation styles only",
+            "type": "integer",
+            "enum": [
+              4,
+              6,
+              8,
+              10,
+              12,
+              16
+            ]
+          },
+          "return_spritesheet": {
+            "description": "Animations: PNG spritesheet instead of GIF",
+            "type": "boolean"
+          },
+          "upscale_output_factor": {
+            "description": "1 = native pixel size",
+            "type": "integer"
+          },
+          "bypass_prompt_expansion": {
+            "description": "Skip automatic LLM prompt enrichment",
+            "type": "boolean"
+          },
+          "include_downloadable_data": {
+            "description": "Extra structured assets e.g. item atlas JSON",
+            "type": "boolean"
+          },
+          "check_cost": {
+            "description": "FREE dry run: returns price, generates nothing, charges nothing",
+            "type": "boolean"
+          },
+          "async": {
+            "description": "Return task_id for polling instead of waiting",
+            "type": "boolean"
+          },
+          "upload_outputs": {
+            "description": "Receive temporary signed URLs in output_urls instead of (or with) base64",
+            "type": "boolean"
+          },
+          "extra_prompt": {
+            "description": "For advanced tileset styles",
+            "type": "string"
+          },
+          "extra_input_image": {
+            "description": "For advanced tileset styles",
+            "type": "string"
+          },
+          "negative": {
+            "description": "Placeholder — current models ignore it. Do not rely on it.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "prompt",
+          "prompt_style",
+          "width",
+          "height",
+          "num_images"
+        ]
+      },
+      "InferenceResponse": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "integer"
+          },
+          "balance_cost": {
+            "type": "number"
+          },
+          "base64_images": {
+            "description": "Raw base64 PNG (or GIF for animations)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "output_urls": {
+            "description": "15-minute signed URLs when upload_outputs=true",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "model": {
+            "type": "string"
+          },
+          "remaining_balance": {
+            "type": "number"
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "outputs_retained_until": {
+            "type": "integer"
+          }
+        }
+      },
+      "PixelFixerRequest": {
+        "type": "object",
+        "oneOf": [
+          {
+            "required": [
+              "input_image"
+            ]
+          },
+          {
+            "required": [
+              "image_url"
+            ]
+          }
+        ],
+        "properties": {
+          "input_image": {
+            "description": "Raw base64 PNG/JPEG/WebP or data URI",
+            "type": "string"
+          },
+          "image_url": {
+            "description": "Public HTTPS PNG/JPEG/WebP",
+            "type": "string",
+            "format": "uri"
+          },
+          "width": {
+            "description": "Neural only: target output width",
+            "type": "integer"
+          },
+          "height": {
+            "description": "Neural only: target output height",
+            "type": "integer"
+          }
+        }
+      },
+      "PixelFixerResponse": {
+        "type": "object",
+        "properties": {
+          "base64_images": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 1,
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "StatusResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "updated_at": {
+            "type": "integer"
+          }
+        }
+      },
+      "StyleResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "prompt_style": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "example": "user"
+          }
+        }
+      },
+      "StyleSelectorItem": {
+        "type": "object",
+        "properties": {
+          "prompt_style": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "required_model": {
+            "type": "string"
+          },
+          "required_tab": {
+            "type": "string"
+          },
+          "min_width": {
+            "type": "integer"
+          },
+          "max_width": {
+            "type": "integer"
+          },
+          "min_height": {
+            "type": "integer"
+          },
+          "max_height": {
+            "type": "integer"
+          },
+          "max_number_of_images": {
+            "type": "integer"
+          },
+          "require_input_image": {
+            "type": "boolean"
+          },
+          "supports_reference_images": {
+            "type": "boolean"
+          },
+          "example_prompt": {
+            "type": "string"
+          }
+        }
+      },
+      "TaskStatus": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "running",
+              "succeeded",
+              "failed"
+            ]
+          },
+          "task_id": {
+            "type": "string"
+          },
+          "result": {
+            "$ref": "#/components/schemas/InferenceResponse"
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "status_code": {
+                "type": "integer"
+              },
+              "detail": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "XRdToken": {
+        "type": "apiKey",
+        "description": "API key starting with rdpk-. Create at https://www.retrodiffusion.ai/app/devtools (max 5 per account).",
+        "name": "X-RD-Token",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "XRdToken": []
+    }
+  ]
 }
