@@ -19,7 +19,7 @@
       "post": {
         "summary": "Generate images (sync or async)",
         "description": "Main generation endpoint. Set check_cost=true for free price estimate. Set async=true for long-running jobs (animations/batches). Use upload_outputs=true for signed URLs.",
-        "operationId": "createInference",
+        "operationId": "CreateInference",
         "requestBody": {
           "required": true,
           "content": {
@@ -79,7 +79,7 @@
     "/inferences/tasks/{task_id}": {
       "get": {
         "summary": "Poll async inference job",
-        "operationId": "getInferenceJob",
+        "operationId": "GetInferenceJob",
         "parameters": [
           {
             "name": "task_id",
@@ -111,7 +111,7 @@
       "get": {
         "summary": "Retrieve generation during 24h retention window",
         "description": "Returns status, settings, billing, and freshly signed output URLs. Any active personal key from owning account may retrieve after key rotation.",
-        "operationId": "getInferenceRequest",
+        "operationId": "GetInferenceRequest",
         "parameters": [
           {
             "name": "request_id",
@@ -145,7 +145,7 @@
     "/inferences/credits": {
       "get": {
         "summary": "Get balance and credits",
-        "operationId": "getBalance",
+        "operationId": "GetBalance",
         "responses": {
           "200": {
             "description": "Current balance",
@@ -166,7 +166,7 @@
     "/styles/selector": {
       "get": {
         "summary": "Live style catalog with limits",
-        "operationId": "listAvailableStyles",
+        "operationId": "ListAvailableStyles",
         "parameters": [
           {
             "name": "model",
@@ -215,7 +215,7 @@
     "/styles": {
       "post": {
         "summary": "Create custom user style (RD Pro reference template)",
-        "operationId": "createUserStyle",
+        "operationId": "CreateUserStyle",
         "requestBody": {
           "required": true,
           "content": {
@@ -243,7 +243,7 @@
     "/styles/{style_id}": {
       "delete": {
         "summary": "Delete user style",
-        "operationId": "deleteUserStyle",
+        "operationId": "DeleteUserStyle",
         "parameters": [
           {
             "name": "style_id",
@@ -274,7 +274,7 @@
       },
       "patch": {
         "summary": "Update user style",
-        "operationId": "updateUserStyle",
+        "operationId": "UpdateUserStyle",
         "parameters": [
           {
             "name": "style_id",
@@ -311,7 +311,7 @@
     "/edit/tools": {
       "get": {
         "summary": "List enabled canvas edit tools",
-        "operationId": "listEditTools",
+        "operationId": "ListEditTools",
         "responses": {
           "200": {
             "description": "Tool list with costs, limits, api_fields",
@@ -336,7 +336,7 @@
       "post": {
         "summary": "Run edit tool",
         "description": "Tools: image_edit, inpainting, outpainting, seam_tiling, background_remover, color_style_transfer, color_reducer, palette_converter, k_centroid_downscale, pixel_correction, rotate. Free tools may require min balance $0.01.",
-        "operationId": "runEditTool",
+        "operationId": "RunEditTool",
         "parameters": [
           {
             "name": "tool_id",
@@ -383,7 +383,7 @@
     "/edit/tools/{tool_id}/estimate": {
       "post": {
         "summary": "Estimate edit tool cost (no run)",
-        "operationId": "estimateEditToolCost",
+        "operationId": "EstimateEditToolCost",
         "parameters": [
           {
             "name": "tool_id",
@@ -422,7 +422,7 @@
       "post": {
         "summary": "Pixel Fixer Standard (free native-grid reconstruction)",
         "description": "Native Rust grid detection. 16x16 to 16 megapixels. Rate limits: 120/min with purchase history, else 10/min. Shared with neural.",
-        "operationId": "fixPixelArtStandard",
+        "operationId": "FixPixelArtStandard",
         "requestBody": {
           "required": true,
           "content": {
@@ -460,7 +460,7 @@
       "post": {
         "summary": "Pixel Fixer Neural (free neural reconstruction)",
         "description": "Accepts larger sources, bilinear-downscales above 1MP budget. Optional width/height target (capped 16MP).",
-        "operationId": "fixPixelArtNeural",
+        "operationId": "FixPixelArtNeural",
         "requestBody": {
           "required": true,
           "content": {
@@ -497,7 +497,7 @@
     "/status": {
       "get": {
         "summary": "Service status (no auth)",
-        "operationId": "getServiceStatus",
+        "operationId": "GetServiceStatus",
         "responses": {
           "200": {
             "description": "Per-model status",
