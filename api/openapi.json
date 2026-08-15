@@ -743,6 +743,7 @@
         }
       },
       "Error": {
+        "description": "NOTE: could also be \"Errors\"",
         "type": "object",
         "properties": {
           "detail": {

@@ -134,7 +134,7 @@ type EditToolResponse struct {
 	RemainingBalance *float64 `json:"remaining_balance,omitempty"`
 }
 
-// Error defines a model
+// NOTE: could also be "Errors"
 type Error struct {
 	Detail ErrorCodeAndMessage `json:"detail"`
 }
