@@ -1,5 +1,7 @@
 package retrodiffusion
 
+import "fmt"
+
 func (e Error) Error() string {
-	return e.Detail
+	return fmt.Sprintf("%s: %s", e.Detail.Code, e.Detail.Message)
 }
