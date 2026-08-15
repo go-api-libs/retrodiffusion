@@ -154,7 +154,7 @@
         "operationId": "UpdateUserStyle",
         "parameters": [
           {
-            "$ref": "#/components/parameters/style_id2"
+            "$ref": "#/components/parameters/style_id"
           }
         ],
         "requestBody": {
@@ -210,7 +210,7 @@
     "/edit/tools/{tool_id}/estimate": {
       "parameters": [
         {
-          "$ref": "#/components/parameters/tool_id2"
+          "$ref": "#/components/parameters/tool_id"
         }
       ],
       "post": {
@@ -1143,14 +1143,6 @@
           "type": "string"
         }
       },
-      "style_id2": {
-        "name": "style_id",
-        "in": "path",
-        "required": true,
-        "schema": {
-          "type": "string"
-        }
-      },
       "tab": {
         "name": "tab",
         "in": "query",
@@ -1173,14 +1165,6 @@
         }
       },
       "tool_id": {
-        "name": "tool_id",
-        "in": "path",
-        "required": true,
-        "schema": {
-          "type": "string"
-        }
-      },
-      "tool_id2": {
         "name": "tool_id",
         "in": "path",
         "required": true,
