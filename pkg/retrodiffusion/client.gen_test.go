@@ -536,7 +536,7 @@ func TestClient_Error(t *testing.T) {
 		t.Run("unknown content type", func(t *testing.T) {
 			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "foo")
-				w.WriteHeader(http.StatusOK)
+				w.WriteHeader(http.StatusCreated)
 			}))
 			t.Cleanup(srv.Close)
 
@@ -560,7 +560,7 @@ func TestClient_Error(t *testing.T) {
 		t.Run("decoding error", func(t *testing.T) {
 			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
+				w.WriteHeader(http.StatusCreated)
 				_, _ = w.Write([]byte("invalid json"))
 			}))
 			t.Cleanup(srv.Close)
@@ -578,7 +578,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.CreateUserStyle(t.Context(), CreateStyleRequest{}); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
