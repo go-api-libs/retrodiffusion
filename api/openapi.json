@@ -135,14 +135,14 @@
       }
     },
     "/styles/{style_id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/style_id"
+        }
+      ],
       "delete": {
         "summary": "Delete user style",
         "operationId": "DeleteUserStyle",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/style_id"
-          }
-        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/DeleteUserStyleOkResponse"
@@ -152,11 +152,6 @@
       "patch": {
         "summary": "Update user style",
         "operationId": "UpdateUserStyle",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/style_id"
-          }
-        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/UpdateUserStyle"
         },
