@@ -118,7 +118,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.CreateInference(t.Context(), InferenceRequest{}); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
@@ -210,7 +210,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.GetInferenceJob(t.Context(), ""); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
@@ -302,7 +302,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.GetInferenceRequest(t.Context(), ""); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
@@ -394,7 +394,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.GetBalance(t.Context()); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
@@ -486,7 +486,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.ListAvailableStyles(t.Context(), nil); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
@@ -670,7 +670,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.DeleteUserStyle(t.Context(), ""); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
@@ -762,7 +762,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.UpdateUserStyle(t.Context(), "", nil); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
@@ -854,7 +854,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.ListEditTools(t.Context()); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
@@ -946,7 +946,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.RunEditTool(t.Context(), "", EditToolRequest{}); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
@@ -1038,7 +1038,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.EstimateEditToolCost(t.Context(), "", EditToolRequest{}); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
@@ -1130,7 +1130,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.FixPixelArtStandard(t.Context(), PixelFixerRequest{}); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
@@ -1222,7 +1222,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.FixPixelArtNeural(t.Context(), PixelFixerRequest{}); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
@@ -1314,7 +1314,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.GetServiceStatus(t.Context()); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
