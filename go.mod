@@ -1,6 +1,6 @@
 module github.com/go-api-libs/retrodiffusion
 
-go 1.26.5
+go 1.27
 
 tool (
 	github.com/MarkRosemaker/openapi-codegen/cmd/openapi-codegen
@@ -10,7 +10,7 @@ tool (
 )
 
 require (
-	github.com/MarkRosemaker/jsonutil v0.0.0-20260718153618-78b5039427a4
+	github.com/MarkRosemaker/jsonutil v0.0.0-20260820212410-12ba6685df41
 	github.com/go-api-libs/api v0.0.0-20260705004954-dad48fbb4ab2
 )
 
