@@ -11,6 +11,7 @@ tool (
 
 require (
 	github.com/MarkRosemaker/jsonutil v0.0.0-20260822121424-820b30d4cb47
+	github.com/MarkRosemaker/openapi-enrich v0.0.0-20260822172034-a58288836adf
 	github.com/go-api-libs/api v0.0.0-20260821155530-ebc29700b6ea
 )
 
@@ -18,14 +19,13 @@ require (
 	cloud.google.com/go v0.123.0 // indirect
 	github.com/MarkRosemaker/errpath v0.0.0-20260425165607-bbd4959d04d9 // indirect
 	github.com/MarkRosemaker/json2yaml v0.0.0-20260820194645-20aa3a7082f4 // indirect
-	github.com/MarkRosemaker/openapi v0.0.0-20260822090837-378815151c2c // indirect
-	github.com/MarkRosemaker/openapi-codegen v0.0.0-20260822101935-f067e626af7e // indirect
-	github.com/MarkRosemaker/openapi-compare v0.0.0-20260822111045-b5677c75a154 // indirect
-	github.com/MarkRosemaker/openapi-compress v0.0.0-20260822101554-e5b3278b5e9d // indirect
-	github.com/MarkRosemaker/openapi-edit v0.0.0-20260822105756-821e68dc7a39 // indirect
-	github.com/MarkRosemaker/openapi-enrich v0.0.0-20260822100927-4cad7a75b369 // indirect
-	github.com/MarkRosemaker/openapi-flatten v0.0.0-20260822104206-a1495bd90feb // indirect
-	github.com/MarkRosemaker/openapi-merge v0.0.0-20260822105350-aaf537b67bb0 // indirect
+	github.com/MarkRosemaker/openapi v0.0.0-20260822160201-4ef929e6dacd // indirect
+	github.com/MarkRosemaker/openapi-codegen v0.0.0-20260822162835-22779bae38c7 // indirect
+	github.com/MarkRosemaker/openapi-compare v0.0.0-20260822160308-d46325b41c60 // indirect
+	github.com/MarkRosemaker/openapi-compress v0.0.0-20260822162351-8a474b59b743 // indirect
+	github.com/MarkRosemaker/openapi-edit v0.0.0-20260822160309-e064283927a6 // indirect
+	github.com/MarkRosemaker/openapi-flatten v0.0.0-20260822160343-0adda28f3305 // indirect
+	github.com/MarkRosemaker/openapi-merge v0.0.0-20260822160309-abc859c5db13 // indirect
 	github.com/MarkRosemaker/ordmap v0.0.0-20260821225345-9c948bb0ea43 // indirect
 	github.com/MarkRosemaker/yaml v0.0.0-20260820194724-a126111ba94f // indirect
 	github.com/MarkRosemaker/yaml2json v0.0.0-20260820194543-4c959435803e // indirect
