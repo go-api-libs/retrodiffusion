@@ -670,16 +670,19 @@
             "description": "Style-enforced tighter limits apply (most top out at 384)",
             "type": "integer",
             "minimum": 16,
-            "maximum": 512
+            "maximum": 512,
+            "example": 128
           },
           "height": {
             "type": "integer",
             "minimum": 16,
-            "maximum": 512
+            "maximum": 512,
+            "example": 128
           },
           "num_images": {
             "type": "integer",
-            "minimum": 1
+            "minimum": 1,
+            "example": 1
           },
           "seed": {
             "description": "Reproducible generation",
@@ -1144,7 +1147,14 @@
         "description": "Rate limited"
       },
       "Unauthorized": {
-        "description": "Missing/invalid X-RD-Token"
+        "description": "Missing/invalid X-RD-Token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/APIError"
+            }
+          }
+        }
       },
       "UnprocessableEntity": {
         "description": "Body failed validation",
