@@ -10,7 +10,7 @@ tool (
 )
 
 require (
-	github.com/MarkRosemaker/jsonutil v0.0.0-20260820212410-12ba6685df41
+	github.com/MarkRosemaker/jsonutil v0.0.0-20260822121424-820b30d4cb47
 	github.com/go-api-libs/api v0.0.0-20260821155530-ebc29700b6ea
 )
 
