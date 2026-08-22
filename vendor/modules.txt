@@ -4,56 +4,62 @@ cloud.google.com/go/civil
 # github.com/MarkRosemaker/errpath v0.0.0-20260425165607-bbd4959d04d9
 ## explicit; go 1.23.2
 github.com/MarkRosemaker/errpath
-# github.com/MarkRosemaker/json2yaml v0.0.0-20260507220148-d6cc0d01bff0
-## explicit; go 1.23.4
+# github.com/MarkRosemaker/json2yaml v0.0.0-20260820194645-20aa3a7082f4
+## explicit; go 1.27
 github.com/MarkRosemaker/json2yaml
 # github.com/MarkRosemaker/jsonutil v0.0.0-20260820212410-12ba6685df41
 ## explicit; go 1.27
 github.com/MarkRosemaker/jsonutil
-# github.com/MarkRosemaker/openapi v0.0.0-20260815172747-241b899d8e0d
-## explicit; go 1.26.3
+# github.com/MarkRosemaker/openapi v0.0.0-20260822090837-378815151c2c
+## explicit; go 1.27
 github.com/MarkRosemaker/openapi
-# github.com/MarkRosemaker/openapi-codegen v0.0.0-20260815183901-1825af3427ed
-## explicit; go 1.26.3
+# github.com/MarkRosemaker/openapi-codegen v0.0.0-20260822101935-f067e626af7e
+## explicit; go 1.27
 github.com/MarkRosemaker/openapi-codegen
 github.com/MarkRosemaker/openapi-codegen/cmd/openapi-codegen
 github.com/MarkRosemaker/openapi-codegen/config
 github.com/MarkRosemaker/openapi-codegen/ir
 github.com/MarkRosemaker/openapi-codegen/render
-# github.com/MarkRosemaker/openapi-compress v0.0.0-20260815184306-84f3bd44b00d
-## explicit; go 1.26.3
+# github.com/MarkRosemaker/openapi-compare v0.0.0-20260822111045-b5677c75a154
+## explicit; go 1.27
+github.com/MarkRosemaker/openapi-compare/schema
+# github.com/MarkRosemaker/openapi-compress v0.0.0-20260822101554-e5b3278b5e9d
+## explicit; go 1.27
 github.com/MarkRosemaker/openapi-compress
 github.com/MarkRosemaker/openapi-compress/cmd/openapi-compress
-# github.com/MarkRosemaker/openapi-enrich v0.0.0-20260815161028-618b00ce6d51
-## explicit; go 1.26.3
+# github.com/MarkRosemaker/openapi-edit v0.0.0-20260822105756-821e68dc7a39
+## explicit; go 1.27
+github.com/MarkRosemaker/openapi-edit
+# github.com/MarkRosemaker/openapi-enrich v0.0.0-20260822100927-4cad7a75b369
+## explicit; go 1.27
 github.com/MarkRosemaker/openapi-enrich
 github.com/MarkRosemaker/openapi-enrich/cassette
 github.com/MarkRosemaker/openapi-enrich/cmd/openapi-enrich
 github.com/MarkRosemaker/openapi-enrich/recorder
-# github.com/MarkRosemaker/openapi-flatten v0.0.0-20260815161433-8837eaf65f9f
-## explicit; go 1.26.3
+# github.com/MarkRosemaker/openapi-flatten v0.0.0-20260822104206-a1495bd90feb
+## explicit; go 1.27
 github.com/MarkRosemaker/openapi-flatten
 github.com/MarkRosemaker/openapi-flatten/cmd/openapi-flatten
-# github.com/MarkRosemaker/openapi-merge v0.0.0-20260815133013-4e45d3e29e7e
-## explicit; go 1.26.3
+# github.com/MarkRosemaker/openapi-merge v0.0.0-20260822105350-aaf537b67bb0
+## explicit; go 1.27
 github.com/MarkRosemaker/openapi-merge
-# github.com/MarkRosemaker/ordmap v0.0.0-20260813220117-99bdc4d3bc78
-## explicit; go 1.25.0
+# github.com/MarkRosemaker/ordmap v0.0.0-20260821225345-9c948bb0ea43
+## explicit; go 1.27
 github.com/MarkRosemaker/ordmap
-# github.com/MarkRosemaker/yaml v0.0.0-20260508005758-fe21a538b084
-## explicit; go 1.23.4
+# github.com/MarkRosemaker/yaml v0.0.0-20260820194724-a126111ba94f
+## explicit; go 1.27
 github.com/MarkRosemaker/yaml
-# github.com/MarkRosemaker/yaml2json v0.0.0-20260507220136-7748efc522b2
-## explicit; go 1.23.4
+# github.com/MarkRosemaker/yaml2json v0.0.0-20260820194543-4c959435803e
+## explicit; go 1.27
 github.com/MarkRosemaker/yaml2json
 # github.com/ettle/strcase v0.2.0
 ## explicit; go 1.12
 github.com/ettle/strcase
-# github.com/go-api-libs/api v0.0.0-20260705004954-dad48fbb4ab2
-## explicit; go 1.26
+# github.com/go-api-libs/api v0.0.0-20260821155530-ebc29700b6ea
+## explicit; go 1.27
 github.com/go-api-libs/api
-# github.com/go-api-libs/types v0.0.0-20251210072721-82754f56609d
-## explicit; go 1.23.2
+# github.com/go-api-libs/types v0.0.0-20260821232109-0cf45378823e
+## explicit; go 1.27
 github.com/go-api-libs/types
 # github.com/google/uuid v1.6.0
 ## explicit
@@ -63,8 +69,8 @@ github.com/google/uuid
 github.com/spf13/afero
 github.com/spf13/afero/internal/common
 github.com/spf13/afero/mem
-# golang.org/x/exp v0.0.0-20260813180055-c1d0aacb2297
-## explicit; go 1.25.0
+# golang.org/x/exp v0.0.0-20260820142414-ca536658362e
+## explicit; go 1.26.0
 golang.org/x/exp/maps
 # golang.org/x/mod v0.40.0
 ## explicit; go 1.25.0

@@ -71,6 +71,11 @@ type Operation struct {
 	Responses       []Response `json:"responses,omitempty"`
 	SuccessReturn   *GoType    `json:"successReturn,omitempty"`
 	Deprecated      bool       `json:"deprecated,omitzero"`
+	// RawBytesSuccess is true when the operation's success response has no
+	// JSON media type, so SuccessReturn is a raw []byte read directly from
+	// the response body rather than a JSON-decoded type. Such operations
+	// are generated as a single concrete method, not a generic function.
+	RawBytesSuccess bool `json:"rawBytesSuccess,omitzero"`
 }
 
 func (op Operation) ParamsInStruct() Params {
@@ -110,6 +115,13 @@ type Schema struct {
 	EnumValues  []EnumValue `json:"enumValues,omitempty"`
 	MapKey      string      `json:"mapKey,omitzero"`
 	MapValue    string      `json:"mapValue,omitzero"`
+
+	// UnionVariants is set for SchemaKindUnion: one pointer field per
+	// oneOf/anyOf variant. IsOneOf selects the cardinality rule enforced by
+	// the generated UnmarshalJSONFrom: exactly one variant must match for
+	// oneOf, at least one for anyOf.
+	UnionVariants []UnionVariant `json:"unionVariants,omitempty"`
+	IsOneOf       bool           `json:"isOneOf,omitzero"`
 }
 
 // SchemaKind categorizes a schema into struct, enum, or array alias.
@@ -121,7 +133,17 @@ const (
 	SchemaKindArrayAlias                   // array type alias
 	SchemaKindAllOf                        // allOf composition (struct with embedded types)
 	SchemaKindMap
+	SchemaKindUnion // untagged oneOf/anyOf composition (pointer-bag struct)
 )
+
+// UnionVariant is one member of a SchemaKindUnion's pointer bag.
+type UnionVariant struct {
+	// FieldName is the exported Go field name, derived from the variant's
+	// resolved type name (e.g. "Card" for a field of type *Card).
+	FieldName string `json:"fieldName,omitzero"`
+	// Type is the variant's own Go type, without the pointer the field adds.
+	Type string `json:"type,omitzero"`
+}
 
 // Field is a named field within a struct schema.
 type Field struct {
@@ -269,6 +291,10 @@ type Response struct {
 	ContentType string  `json:"contentType,omitzero"`
 	GoType      *GoType `json:"goType,omitempty"`
 	IsSuccess   bool    `json:"isSuccess,omitzero"`
+	// IsRawBytes is true when ContentType has no JSON media type declared for
+	// it, so GoType is a raw []byte read directly from the response body
+	// rather than something to json.Unmarshal into.
+	IsRawBytes bool `json:"isRawBytes,omitzero"`
 }
 
 // ReqBody is the IR representation of an operation request body.
