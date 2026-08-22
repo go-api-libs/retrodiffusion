@@ -307,33 +307,8 @@
       "APIErrorDetail": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/APIErrorDetailItem"
+          "$ref": "#/components/schemas/ErrorWithLocation"
         }
-      },
-      "APIErrorDetailItem": {
-        "type": "object",
-        "properties": {
-          "loc": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "example": "body"
-            }
-          },
-          "msg": {
-            "type": "string",
-            "example": "field required"
-          },
-          "type": {
-            "type": "string",
-            "example": "value_error.missing"
-          }
-        },
-        "required": [
-          "loc",
-          "msg",
-          "type"
-        ]
       },
       "AsyncAccepted": {
         "type": "object",
@@ -608,6 +583,31 @@
             "type": "string"
           }
         }
+      },
+      "ErrorWithLocation": {
+        "type": "object",
+        "properties": {
+          "loc": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "example": "body"
+            }
+          },
+          "msg": {
+            "type": "string",
+            "example": "field required"
+          },
+          "type": {
+            "type": "string",
+            "example": "value_error.missing"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ]
       },
       "Errors": {
         "type": "object",
