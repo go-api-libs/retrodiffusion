@@ -113,6 +113,9 @@
         },
         {
           "$ref": "#/components/parameters/tab"
+        },
+        {
+          "$ref": "#/components/parameters/X-Rd-Token"
         }
       ],
       "get": {
@@ -121,6 +124,9 @@
         "responses": {
           "200": {
             "$ref": "#/components/responses/StyleDescriptors"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
           }
         }
       }
@@ -1183,7 +1189,8 @@
         "in": "header",
         "required": true,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "example": "YOUR_API_KEY"
         }
       },
       "model": {
@@ -1196,7 +1203,8 @@
             "rd_plus",
             "rd_pro",
             "rd_mini"
-          ]
+          ],
+          "example": "rd_pro"
         }
       },
       "request_id": {
