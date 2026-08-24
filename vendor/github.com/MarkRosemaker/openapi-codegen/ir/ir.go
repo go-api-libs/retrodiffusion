@@ -1,6 +1,7 @@
 package ir
 
 import (
+	"cmp"
 	"fmt"
 	"slices"
 	"strings"
@@ -21,6 +22,10 @@ type Document struct {
 	HasDurationFields      bool        `json:"hasDurationFields,omitzero"`
 	HasDateFields          bool        `json:"hasDateFields,omitzero"`
 	HasDateTimeOrIntFields bool        `json:"hasDateTimeOrIntFields,omitzero"`
+
+	// HasServerOverrides is true when any path item names a server of its own,
+	// which is what the generated serverURL helper is for.
+	HasServerOverrides bool `json:"hasServerOverrides,omitzero"`
 
 	// InteractionCalls holds one entry per matched interaction.
 	// Populated at code-gen time; not serialized to ir.json (too noisy).
@@ -56,21 +61,24 @@ type URLParts struct {
 
 // Operation represents a single API operation.
 type Operation struct {
-	Name            string     `json:"name,omitzero"`
-	Description     string     `json:"description,omitzero"`
-	Summary         string     `json:"summary,omitzero"`
-	Method          string     `json:"method,omitzero"`
-	PathTemplate    string     `json:"pathTemplate,omitzero"`
-	JoinPathArgs    []string   `json:"joinPathArgs,omitempty"`
-	PathParams      Params     `json:"pathParams,omitempty"`
-	QueryParams     Params     `json:"queryParams,omitempty"`
-	HeaderParams    Params     `json:"headerParams,omitempty"`
-	HasParams       bool       `json:"hasParams,omitzero"`
-	ParamStructName string     `json:"paramStructName,omitzero"`
-	RequestBody     *ReqBody   `json:"requestBody,omitempty"`
-	Responses       []Response `json:"responses,omitempty"`
-	SuccessReturn   *GoType    `json:"successReturn,omitempty"`
-	Deprecated      bool       `json:"deprecated,omitzero"`
+	// BaseURL is set when the path item names a server of its own, overriding
+	// the document's for this operation only.
+	BaseURL         *URLParts `json:"baseURL,omitzero"`
+	Name            string    `json:"name,omitzero"`
+	Description     string    `json:"description,omitzero"`
+	Summary         string    `json:"summary,omitzero"`
+	Method          string    `json:"method,omitzero"`
+	PathTemplate    string    `json:"pathTemplate,omitzero"`
+	JoinPathArgs    []string  `json:"joinPathArgs,omitempty"`
+	PathParams      Params    `json:"pathParams,omitempty"`
+	QueryParams     Params    `json:"queryParams,omitempty"`
+	HeaderParams    Params    `json:"headerParams,omitempty"`
+	HasParams       bool      `json:"hasParams,omitzero"`
+	ParamStructName string    `json:"paramStructName,omitzero"`
+	RequestBody     *ReqBody  `json:"requestBody,omitempty"`
+	Responses       Responses `json:"responses,omitempty"`
+	SuccessReturn   *GoType   `json:"successReturn,omitempty"`
+	Deprecated      bool      `json:"deprecated,omitzero"`
 	// RawBytesSuccess is true when the operation's success response has no
 	// JSON media type, so SuccessReturn is a raw []byte read directly from
 	// the response body rather than a JSON-decoded type. Such operations
@@ -128,10 +136,10 @@ type Schema struct {
 type SchemaKind int
 
 const (
-	SchemaKindStruct     SchemaKind = iota // object with properties
-	SchemaKindEnum                         // string with enum values
-	SchemaKindArrayAlias                   // array type alias
-	SchemaKindAllOf                        // allOf composition (struct with embedded types)
+	SchemaKindStruct SchemaKind = iota // object with properties
+	SchemaKindEnum                     // string with enum values
+	SchemaKindAlias                    // named type alias: array or plain scalar
+	SchemaKindAllOf                    // allOf composition (struct with embedded types)
 	SchemaKindMap
 	SchemaKindUnion // untagged oneOf/anyOf composition (pointer-bag struct)
 )
@@ -283,6 +291,12 @@ func (t GoType) ZeroValue() string {
 	}
 }
 
+type Responses []Response
+
+func (rs Responses) HasDefault() bool {
+	return slices.ContainsFunc(rs, func(r Response) bool { return r.StatusCode == "default" })
+}
+
 // Response represents one expected HTTP response from an operation.
 type Response struct {
 	StatusCode  string  `json:"statusCode,omitzero"`
@@ -310,4 +324,17 @@ type Auth struct {
 
 type Bearer struct {
 	Name string `json:"name,omitzero"`
+}
+
+// BaseURLExpr returns the Go expression for the URL an operation builds its
+// request path on: the client's, or serverURL with the server the path item
+// named for itself. The latter stays overridable -- WithBaseURL has to reach
+// every operation, or a caller cannot point the client at a test server.
+func (op Operation) BaseURLExpr() string {
+	if op.BaseURL == nil {
+		return "c.baseURL"
+	}
+
+	return fmt.Sprintf("c.serverURL(&url.URL{Scheme: %q, Host: %q, Path: %q})",
+		op.BaseURL.Scheme, op.BaseURL.Host, cmp.Or(op.BaseURL.Path, "/"))
 }

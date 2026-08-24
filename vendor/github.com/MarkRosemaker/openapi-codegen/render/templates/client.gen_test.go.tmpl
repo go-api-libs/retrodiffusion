@@ -62,6 +62,7 @@ func TestClient_Error(t *testing.T) {
 			}
 		})
 
+		{{ if not .Responses.HasDefault -}}
 		t.Run("unknown status code", func(t *testing.T) {
 			srv := newTestServer(t, http.StatusTeapot)
 
@@ -87,6 +88,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatalf("got: %v, want: %v", apiErr.Response.StatusCode, http.StatusTeapot)
 			}
 		})
+		{{ end }}
 		{{- if .SuccessReturn }}
 
 		t.Run("unknown content type", func(t *testing.T) {
@@ -187,8 +189,17 @@ func replay(t *testing.T) http.RoundTripper {
 			ia.Request.Headers = http.Header{}
 		}
 		
-		if ia.Request.Headers.Get("User-Agent") == "" {
-			ia.Request.Headers.Set("User-Agent", defaultUserAgent)
+		{{/* User-Agent identifies whoever made the call, so the recording carries
+			the tool that made it and this client necessarily sends its own. That
+			is not a difference worth failing on; every other header is compared
+			exactly. */}}
+		ia.Request.Headers.Set("User-Agent", defaultUserAgent)
+
+		{{/* A Content-Type describing a body that is not there says nothing about
+			the request, and the client sets one only when it sends a body. Some
+			recorders send it regardless. */}}
+		if len(ia.Request.Body) == 0 {
+			ia.Request.Headers.Del("Content-Type")
 		}
 
 		if !maps.EqualFunc(r.Headers, ia.Request.Headers, slices.Equal) {
