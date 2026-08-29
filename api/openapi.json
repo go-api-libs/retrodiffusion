@@ -56,6 +56,9 @@
     "/inferences/tasks/{task_id}": {
       "parameters": [
         {
+          "$ref": "#/components/parameters/X-Rd-Token"
+        },
+        {
           "$ref": "#/components/parameters/task_id"
         }
       ],
@@ -75,6 +78,9 @@
     "/inferences/requests/{request_id}": {
       "parameters": [
         {
+          "$ref": "#/components/parameters/X-Rd-Token"
+        },
+        {
           "$ref": "#/components/parameters/request_id"
         }
       ],
@@ -93,6 +99,11 @@
       }
     },
     "/inferences/credits": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/X-Rd-Token"
+        }
+      ],
       "get": {
         "summary": "Get balance and credits",
         "operationId": "GetBalance",
@@ -109,13 +120,13 @@
     "/styles/selector": {
       "parameters": [
         {
+          "$ref": "#/components/parameters/X-Rd-Token"
+        },
+        {
           "$ref": "#/components/parameters/model"
         },
         {
           "$ref": "#/components/parameters/tab"
-        },
-        {
-          "$ref": "#/components/parameters/X-Rd-Token"
         }
       ],
       "get": {
@@ -132,6 +143,11 @@
       }
     },
     "/styles": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/X-Rd-Token"
+        }
+      ],
       "post": {
         "summary": "Create custom user style (RD Pro reference template)",
         "operationId": "CreateUserStyle",
@@ -147,6 +163,9 @@
     },
     "/styles/{style_id}": {
       "parameters": [
+        {
+          "$ref": "#/components/parameters/X-Rd-Token"
+        },
         {
           "$ref": "#/components/parameters/style_id"
         }
@@ -174,6 +193,11 @@
       }
     },
     "/edit/tools": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/X-Rd-Token"
+        }
+      ],
       "get": {
         "summary": "List enabled canvas edit tools",
         "operationId": "ListEditTools",
@@ -186,6 +210,9 @@
     },
     "/edit/tools/{tool_id}": {
       "parameters": [
+        {
+          "$ref": "#/components/parameters/X-Rd-Token"
+        },
         {
           "$ref": "#/components/parameters/tool_id"
         }
@@ -216,6 +243,9 @@
     "/edit/tools/{tool_id}/estimate": {
       "parameters": [
         {
+          "$ref": "#/components/parameters/X-Rd-Token"
+        },
+        {
           "$ref": "#/components/parameters/tool_id"
         }
       ],
@@ -233,6 +263,11 @@
       }
     },
     "/pixel-fixer/standard": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/X-Rd-Token"
+        }
+      ],
       "post": {
         "summary": "Pixel Fixer Standard (free native-grid reconstruction)",
         "description": "Native Rust grid detection. 16x16 to 16 megapixels. Rate limits: 120/min with purchase history, else 10/min. Shared with neural.",
@@ -257,6 +292,11 @@
       }
     },
     "/pixel-fixer/neural": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/X-Rd-Token"
+        }
+      ],
       "post": {
         "summary": "Pixel Fixer Neural (free neural reconstruction)",
         "description": "Accepts larger sources, bilinear-downscales above 1MP budget. Optional width/height target (capped 16MP).",
@@ -269,7 +309,7 @@
             "$ref": "#/components/responses/FixPixelArtNeuralOkResponse"
           },
           "413": {
-            "$ref": "#/components/responses/FixPixelArtNeuralRequestEntityTooLargeResponse"
+            "$ref": "#/components/responses/TooLarge"
           },
           "422": {
             "$ref": "#/components/responses/FixPixelArtNeuralUnprocessableEntityResponse"
@@ -281,6 +321,11 @@
       }
     },
     "/status": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/X-Rd-Token"
+        }
+      ],
       "get": {
         "summary": "Service status (no auth)",
         "operationId": "GetServiceStatus",
@@ -803,6 +848,22 @@
           }
         }
       },
+      "Model": {
+        "type": "string",
+        "enum": [
+          "rd_fast",
+          "rd_plus",
+          "rd_pro",
+          "rd_mini"
+        ],
+        "example": "rd_pro"
+      },
+      "Models": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Model"
+        }
+      },
       "PixelFixerRequest": {
         "description": "Provide exactly one of input_image or image_url. width/height are optional and only used by the neural endpoint.",
         "type": "object",
@@ -856,69 +917,95 @@
       "Style": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string"
-          },
           "prompt_style": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "type": {
             "type": "string",
-            "example": "user"
-          }
-        }
-      },
-      "StyleDescriptor": {
-        "type": "object",
-        "properties": {
-          "prompt_style": {
-            "type": "string"
+            "example": "rd_animation__8_dir_rotation"
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "example": "8 Direction Rotation"
           },
           "description": {
-            "type": "string"
+            "type": "string",
+            "example": "Create 8 direction rotations of anything."
           },
           "required_model": {
-            "type": "string"
+            "$ref": "#/components/schemas/Model"
           },
           "required_tab": {
-            "type": "string"
+            "$ref": "#/components/schemas/Tab"
           },
           "min_width": {
-            "type": "integer"
+            "type": "integer",
+            "example": 80
           },
           "max_width": {
-            "type": "integer"
+            "type": "integer",
+            "example": 80
           },
           "min_height": {
-            "type": "integer"
+            "type": "integer",
+            "example": 80
           },
           "max_height": {
-            "type": "integer"
+            "type": "integer",
+            "example": 80
           },
           "max_number_of_images": {
-            "type": "integer"
+            "type": "integer",
+            "example": 1
           },
           "require_input_image": {
-            "type": "boolean"
+            "type": "boolean",
+            "example": null
           },
           "supports_reference_images": {
             "type": "boolean"
           },
           "example_prompt": {
-            "type": "string"
+            "type": "string",
+            "example": "An orange cat playing with a blue ball of yarn"
+          },
+          "group_id": {
+            "type": "string",
+            "example": "RD Animation"
           }
         }
       },
       "StyleDescriptors": {
+        "type": "object",
+        "properties": {
+          "styles": {
+            "$ref": "#/components/schemas/Styles"
+          },
+          "models": {
+            "$ref": "#/components/schemas/Models"
+          },
+          "tabs": {
+            "$ref": "#/components/schemas/Tabs"
+          }
+        }
+      },
+      "Styles": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/StyleDescriptor"
+          "$ref": "#/components/schemas/Style"
+        }
+      },
+      "Tab": {
+        "type": "string",
+        "enum": [
+          "tab:image",
+          "tab:animation",
+          "tab:advanced-animation",
+          "tab:tileset"
+        ],
+        "example": "tab:advanced-animation"
+      },
+      "Tabs": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Tab"
         }
       },
       "TaskStatus": {
@@ -1019,9 +1106,6 @@
             }
           }
         }
-      },
-      "FixPixelArtNeuralRequestEntityTooLargeResponse": {
-        "description": "Request or output too large"
       },
       "FixPixelArtNeuralTooManyRequestsResponse": {
         "description": "Rate limit exceeded"
@@ -1149,6 +1233,9 @@
           }
         }
       },
+      "TooLarge": {
+        "description": "Request or output too large"
+      },
       "TooManyRequests": {
         "description": "Rate limited"
       },
@@ -1189,8 +1276,7 @@
         "in": "header",
         "required": true,
         "schema": {
-          "type": "string",
-          "example": "YOUR_API_KEY"
+          "type": "string"
         }
       },
       "model": {
@@ -1198,13 +1284,8 @@
         "in": "query",
         "schema": {
           "type": "string",
-          "enum": [
-            "rd_fast",
-            "rd_plus",
-            "rd_pro",
-            "rd_mini"
-          ],
-          "example": "rd_pro"
+          "example": "rd_pro",
+          "$ref": "#/components/schemas/Model"
         }
       },
       "request_id": {
@@ -1227,13 +1308,7 @@
         "name": "tab",
         "in": "query",
         "schema": {
-          "type": "string",
-          "enum": [
-            "tab:image",
-            "tab:animation",
-            "tab:advanced-animation",
-            "tab:tileset"
-          ]
+          "$ref": "#/components/schemas/Tab"
         }
       },
       "task_id": {

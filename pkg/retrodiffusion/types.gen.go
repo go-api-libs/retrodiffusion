@@ -27,6 +27,14 @@ type ListAvailableStylesParams struct {
 	Tab   string
 }
 
+// APIError defines a model
+type APIError struct {
+	Detail APIErrorDetail `json:"detail,omitzero"`
+}
+
+// APIErrorDetail defines a model
+type APIErrorDetail []ErrorWithLocation
+
 // AsyncAccepted defines a model
 type AsyncAccepted struct {
 	Status    string `json:"status,omitzero"`
@@ -40,7 +48,7 @@ type CreateStyleRequest struct {
 	Name             string   `json:"name,omitzero"`
 	Description      string   `json:"description,omitzero"`
 	StyleIcon        string   `json:"style_icon,omitzero"`
-	ReferenceImages  []string `json:"reference_images,omitempty"`
+	ReferenceImages  []string `json:"reference_images,omitzero"`
 	ReferenceCaption string   `json:"reference_caption,omitzero"`
 	ApplyPromptFixer bool     `json:"apply_prompt_fixer,omitempty"`
 	LlmInstructions  string   `json:"llm_instructions,omitzero"`
@@ -126,23 +134,17 @@ func (e EditToolRequestDitherMode) Valid() bool {
 type EditToolResponse struct {
 	ToolID           string   `json:"tool_id,omitzero"`
 	InferenceID      string   `json:"inference_id,omitzero"`
-	Base64Images     []string `json:"base64_images,omitempty"`
-	OutputUrls       []string `json:"output_urls,omitempty"`
+	Base64Images     []string `json:"base64_images,omitzero"`
+	OutputUrls       []string `json:"output_urls,omitzero"`
 	BalanceCost      *float64 `json:"balance_cost,omitempty"`
 	CreditCost       *float64 `json:"credit_cost,omitempty"`
 	Charged          bool     `json:"charged,omitempty"`
 	RemainingBalance *float64 `json:"remaining_balance,omitempty"`
 }
 
-// NOTE: could also be "Errors"
+// Error defines a model
 type Error struct {
-	Detail ErrorCodeAndMessage `json:"detail"`
-}
-
-// ErrorCodeAndMessage defines a model
-type ErrorCodeAndMessage struct {
-	Code    string `json:"code,omitzero"`
-	Message string `json:"message,omitzero"`
+	Detail ErrorWithCode `json:"detail"`
 }
 
 // ErrorDetail defines a model
@@ -153,9 +155,22 @@ type ErrorDetail struct {
 // ErrorDetails defines a model
 type ErrorDetails []ErrorDetail
 
+// ErrorWithCode defines a model
+type ErrorWithCode struct {
+	Code    string `json:"code,omitzero"`
+	Message string `json:"message,omitzero"`
+}
+
+// ErrorWithLocation defines a model
+type ErrorWithLocation struct {
+	Loc  []string `json:"loc"`
+	Msg  string   `json:"msg,omitzero"`
+	Type string   `json:"type,omitzero"`
+}
+
 // Errors defines a model
 type Errors struct {
-	Detail ErrorDetails `json:"detail,omitempty"`
+	Detail ErrorDetails `json:"detail,omitzero"`
 }
 
 // Inference defines a model
@@ -163,9 +178,9 @@ type Inference struct {
 	CreatedAt   *int     `json:"created_at,omitempty"`
 	BalanceCost *float64 `json:"balance_cost,omitempty"`
 	// Raw base64 PNG (or GIF for animations)
-	Base64Images []string `json:"base64_images,omitempty"`
+	Base64Images []string `json:"base64_images,omitzero"`
 	// 15-minute signed URLs when upload_outputs=true
-	OutputUrls           []string `json:"output_urls,omitempty"`
+	OutputUrls           []string `json:"output_urls,omitzero"`
 	Model                string   `json:"model,omitzero"`
 	RemainingBalance     *float64 `json:"remaining_balance,omitempty"`
 	RequestID            string   `json:"request_id,omitzero"`
@@ -189,7 +204,7 @@ type InferenceRequest struct {
 	// How much to change input_image
 	Strength *float64 `json:"strength,omitempty"`
 	// Base64 images. RD Pro styles only. Guides style/content.
-	ReferenceImages []string `json:"reference_images,omitempty"`
+	ReferenceImages []string `json:"reference_images,omitzero"`
 	// Base64 palette constraining output colors
 	InputPalette string `json:"input_palette,omitzero"`
 	// Transparent output
@@ -226,6 +241,29 @@ type InferenceRequestResult map[string]struct{}
 // ListEditToolsOkJSONResponse defines a model
 type ListEditToolsOkJSONResponse []map[string]struct{}
 
+// Model defines a model
+type Model string
+
+const (
+	ModelRdFast Model = "rd_fast"
+	ModelRdPlus Model = "rd_plus"
+	ModelRdPro  Model = "rd_pro"
+	ModelRdMini Model = "rd_mini"
+)
+
+// Valid indicates whether the value is a known member of the Model enum.
+func (e Model) Valid() bool {
+	switch e {
+	case ModelRdFast, ModelRdPlus, ModelRdPro, ModelRdMini:
+		return true
+	default:
+		return false
+	}
+}
+
+// Models defines a model
+type Models []Model
+
 // Provide exactly one of input_image or image_url. width/height are optional and only used by the neural endpoint.
 type PixelFixerRequest struct {
 	// Raw base64 PNG/JPEG/WebP or data URI
@@ -240,7 +278,7 @@ type PixelFixerRequest struct {
 
 // PixelFixerResponse defines a model
 type PixelFixerResponse struct {
-	Base64Images [1]string `json:"base64_images,omitempty"`
+	Base64Images [1]string `json:"base64_images,omitzero"`
 }
 
 // StatusResponse defines a model
@@ -251,19 +289,11 @@ type StatusResponse struct {
 
 // Style defines a model
 type Style struct {
-	ID          string `json:"id,omitzero"`
-	PromptStyle string `json:"prompt_style,omitzero"`
-	Name        string `json:"name,omitzero"`
-	Type        string `json:"type,omitzero"`
-}
-
-// StyleDescriptor defines a model
-type StyleDescriptor struct {
 	PromptStyle             string `json:"prompt_style,omitzero"`
 	Name                    string `json:"name,omitzero"`
 	Description             string `json:"description,omitzero"`
-	RequiredModel           string `json:"required_model,omitzero"`
-	RequiredTab             string `json:"required_tab,omitzero"`
+	RequiredModel           Model  `json:"required_model,omitzero"`
+	RequiredTab             Tab    `json:"required_tab,omitzero"`
 	MinWidth                *int   `json:"min_width,omitempty"`
 	MaxWidth                *int   `json:"max_width,omitempty"`
 	MinHeight               *int   `json:"min_height,omitempty"`
@@ -272,10 +302,41 @@ type StyleDescriptor struct {
 	RequireInputImage       bool   `json:"require_input_image,omitempty"`
 	SupportsReferenceImages bool   `json:"supports_reference_images,omitempty"`
 	ExamplePrompt           string `json:"example_prompt,omitzero"`
+	GroupID                 string `json:"group_id,omitzero"`
 }
 
 // StyleDescriptors defines a model
-type StyleDescriptors []StyleDescriptor
+type StyleDescriptors struct {
+	Styles Styles `json:"styles,omitzero"`
+	Models Models `json:"models,omitzero"`
+	Tabs   Tabs   `json:"tabs,omitzero"`
+}
+
+// Styles defines a model
+type Styles []Style
+
+// Tab defines a model
+type Tab string
+
+const (
+	TabTabimage             Tab = "tab:image"
+	TabTabanimation         Tab = "tab:animation"
+	TabTabadvancedAnimation Tab = "tab:advanced-animation"
+	TabTabtileset           Tab = "tab:tileset"
+)
+
+// Valid indicates whether the value is a known member of the Tab enum.
+func (e Tab) Valid() bool {
+	switch e {
+	case TabTabimage, TabTabanimation, TabTabadvancedAnimation, TabTabtileset:
+		return true
+	default:
+		return false
+	}
+}
+
+// Tabs defines a model
+type Tabs []Tab
 
 // TaskStatus defines a model
 type TaskStatus struct {

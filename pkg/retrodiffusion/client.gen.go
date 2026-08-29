@@ -7,10 +7,12 @@ package retrodiffusion
 import (
 	"context"
 	"encoding/json/v2"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/go-api-libs/api"
@@ -28,6 +30,8 @@ var defaultBaseURL = &url.URL{
 type Client struct {
 	// The HTTP client to use for requests.
 	cli *http.Client
+	// The API key
+	apiKey string
 	// The base URL
 	baseURL *url.URL
 	// The user agent
@@ -52,6 +56,11 @@ func WithHTTPClient(cli *http.Client) ClientOption {
 	return func(c *Client) { c.cli = cli }
 }
 
+// WithAPIKey returns a [ClientOption] that sets a custom API key.
+func WithAPIKey(apiKey string) ClientOption {
+	return func(c *Client) { c.apiKey = apiKey }
+}
+
 // NewClient creates a new Client.
 func NewClient(opts ...ClientOption) (*Client, error) {
 	c := &Client{
@@ -60,8 +69,14 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 		userAgent: defaultUserAgent,
 	}
 
+	c.apiKey = os.Getenv("RETRO_DIFFUSION_API_KEY")
+
 	for _, opt := range opts {
 		opt(c)
+	}
+
+	if c.apiKey == "" {
+		return nil, errors.New("api key RETRO_DIFFUSION_API_KEY not provided")
 	}
 
 	return c, nil
@@ -71,18 +86,19 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 //
 //	POST /inferences
 func (c *Client) CreateInference(ctx context.Context, body InferenceRequest) (*Inference, error) {
-	return CreateInference[Inference](ctx, c, body)
+	return c.CreateInferenceWithResult[Inference](ctx, body)
 }
 
 // Main generation endpoint. Set check_cost=true for free price estimate. Set async=true for long-running jobs (animations/batches). Use upload_outputs=true for signed URLs.
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /inferences
-func CreateInference[R any](ctx context.Context, c *Client, body InferenceRequest) (*R, error) {
+func (c *Client) CreateInferenceWithResult[R any](ctx context.Context, body InferenceRequest) (*R, error) {
 	u := c.baseURL.JoinPath("inferences")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
+			"X-Rd-Token":   []string{c.apiKey},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -136,7 +152,7 @@ func CreateInference[R any](ctx context.Context, c *Client, body InferenceReques
 		// Invalid input or insufficient balance
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out Error
+			var out APIError
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -147,10 +163,30 @@ func CreateInference[R any](ctx context.Context, c *Client, body InferenceReques
 		}
 	case http.StatusUnauthorized:
 		// Missing/invalid X-RD-Token
-		return nil, fmt.Errorf("CreateInference: status %s", rsp.Status)
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out APIError
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				return nil, api.WrapDecodingError(rsp, err)
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, api.NewErrUnknownContentType(rsp)
+		}
 	case http.StatusUnprocessableEntity:
 		// Body failed validation
-		return nil, fmt.Errorf("CreateInference: status %s", rsp.Status)
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out APIError
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				return nil, api.WrapDecodingError(rsp, err)
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, api.NewErrUnknownContentType(rsp)
+		}
 	case http.StatusTooManyRequests:
 		// Rate limited
 		return nil, fmt.Errorf("CreateInference: status %s", rsp.Status)
@@ -166,17 +202,18 @@ func CreateInference[R any](ctx context.Context, c *Client, body InferenceReques
 //
 //	GET /inferences/tasks/{task_id}
 func (c *Client) GetInferenceJob(ctx context.Context, taskID string) (*TaskStatus, error) {
-	return GetInferenceJob[TaskStatus](ctx, c, taskID)
+	return c.GetInferenceJobWithResult[TaskStatus](ctx, taskID)
 }
 
 // Poll async inference job
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /inferences/tasks/{task_id}
-func GetInferenceJob[R any](ctx context.Context, c *Client, taskID string) (*R, error) {
+func (c *Client) GetInferenceJobWithResult[R any](ctx context.Context, taskID string) (*R, error) {
 	u := c.baseURL.JoinPath("inferences", "tasks", taskID)
 	req := (&http.Request{
 		Header: http.Header{
+			"X-Rd-Token": []string{c.apiKey},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -219,17 +256,18 @@ func GetInferenceJob[R any](ctx context.Context, c *Client, taskID string) (*R, 
 //
 //	GET /inferences/requests/{request_id}
 func (c *Client) GetInferenceRequest(ctx context.Context, requestID string) (*InferenceRequestResult, error) {
-	return GetInferenceRequest[InferenceRequestResult](ctx, c, requestID)
+	return c.GetInferenceRequestWithResult[InferenceRequestResult](ctx, requestID)
 }
 
 // Returns status, settings, billing, and freshly signed output URLs. Any active personal key from owning account may retrieve after key rotation.
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /inferences/requests/{request_id}
-func GetInferenceRequest[R any](ctx context.Context, c *Client, requestID string) (*R, error) {
+func (c *Client) GetInferenceRequestWithResult[R any](ctx context.Context, requestID string) (*R, error) {
 	u := c.baseURL.JoinPath("inferences", "requests", requestID)
 	req := (&http.Request{
 		Header: http.Header{
+			"X-Rd-Token": []string{c.apiKey},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -272,17 +310,18 @@ func GetInferenceRequest[R any](ctx context.Context, c *Client, requestID string
 //
 //	GET /inferences/credits
 func (c *Client) GetBalance(ctx context.Context) (*CreditsResponse, error) {
-	return GetBalance[CreditsResponse](ctx, c)
+	return c.GetBalanceWithResult[CreditsResponse](ctx)
 }
 
 // Get balance and credits
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /inferences/credits
-func GetBalance[R any](ctx context.Context, c *Client) (*R, error) {
+func (c *Client) GetBalanceWithResult[R any](ctx context.Context) (*R, error) {
 	u := c.baseURL.JoinPath("inferences", "credits")
 	req := (&http.Request{
 		Header: http.Header{
+			"X-Rd-Token": []string{c.apiKey},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -325,14 +364,14 @@ func GetBalance[R any](ctx context.Context, c *Client) (*R, error) {
 //
 //	GET /styles/selector
 func (c *Client) ListAvailableStyles(ctx context.Context, params *ListAvailableStylesParams) (*StyleDescriptors, error) {
-	return ListAvailableStyles[StyleDescriptors](ctx, c, params)
+	return c.ListAvailableStylesWithResult[StyleDescriptors](ctx, params)
 }
 
 // Live style catalog with limits
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /styles/selector
-func ListAvailableStyles[R any](ctx context.Context, c *Client, params *ListAvailableStylesParams) (*R, error) {
+func (c *Client) ListAvailableStylesWithResult[R any](ctx context.Context, params *ListAvailableStylesParams) (*R, error) {
 	u := c.baseURL.JoinPath("styles", "selector")
 	if params != nil {
 		q := make(url.Values, 2)
@@ -350,6 +389,7 @@ func ListAvailableStyles[R any](ctx context.Context, c *Client, params *ListAvai
 
 	req := (&http.Request{
 		Header: http.Header{
+			"X-Rd-Token": []string{c.apiKey},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -380,6 +420,19 @@ func ListAvailableStyles[R any](ctx context.Context, c *Client, params *ListAvai
 		default:
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
+	case http.StatusUnauthorized:
+		// Missing/invalid X-RD-Token
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out APIError
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				return nil, api.WrapDecodingError(rsp, err)
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, api.NewErrUnknownContentType(rsp)
+		}
 	default:
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
@@ -389,18 +442,19 @@ func ListAvailableStyles[R any](ctx context.Context, c *Client, params *ListAvai
 //
 //	POST /styles
 func (c *Client) CreateUserStyle(ctx context.Context, body CreateStyleRequest) (*Style, error) {
-	return CreateUserStyle[Style](ctx, c, body)
+	return c.CreateUserStyleWithResult[Style](ctx, body)
 }
 
 // Create custom user style (RD Pro reference template)
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /styles
-func CreateUserStyle[R any](ctx context.Context, c *Client, body CreateStyleRequest) (*R, error) {
+func (c *Client) CreateUserStyleWithResult[R any](ctx context.Context, body CreateStyleRequest) (*R, error) {
 	u := c.baseURL.JoinPath("styles")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
+			"X-Rd-Token":   []string{c.apiKey},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -446,17 +500,18 @@ func CreateUserStyle[R any](ctx context.Context, c *Client, body CreateStyleRequ
 //
 //	DELETE /styles/{style_id}
 func (c *Client) DeleteUserStyle(ctx context.Context, styleID string) (*DeleteUserStyleOkJSONResponse, error) {
-	return DeleteUserStyle[DeleteUserStyleOkJSONResponse](ctx, c, styleID)
+	return c.DeleteUserStyleWithResult[DeleteUserStyleOkJSONResponse](ctx, styleID)
 }
 
 // Delete user style
 // You can define a custom result to unmarshal the response into.
 //
 //	DELETE /styles/{style_id}
-func DeleteUserStyle[R any](ctx context.Context, c *Client, styleID string) (*R, error) {
+func (c *Client) DeleteUserStyleWithResult[R any](ctx context.Context, styleID string) (*R, error) {
 	u := c.baseURL.JoinPath("styles", styleID)
 	req := (&http.Request{
 		Header: http.Header{
+			"X-Rd-Token": []string{c.apiKey},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -496,18 +551,19 @@ func DeleteUserStyle[R any](ctx context.Context, c *Client, styleID string) (*R,
 //
 //	PATCH /styles/{style_id}
 func (c *Client) UpdateUserStyle(ctx context.Context, styleID string, body *CreateStyleRequest) (*Style, error) {
-	return UpdateUserStyle[Style](ctx, c, styleID, body)
+	return c.UpdateUserStyleWithResult[Style](ctx, styleID, body)
 }
 
 // Update user style
 // You can define a custom result to unmarshal the response into.
 //
 //	PATCH /styles/{style_id}
-func UpdateUserStyle[R any](ctx context.Context, c *Client, styleID string, body *CreateStyleRequest) (*R, error) {
+func (c *Client) UpdateUserStyleWithResult[R any](ctx context.Context, styleID string, body *CreateStyleRequest) (*R, error) {
 	u := c.baseURL.JoinPath("styles", styleID)
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
+			"X-Rd-Token":   []string{c.apiKey},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -553,17 +609,18 @@ func UpdateUserStyle[R any](ctx context.Context, c *Client, styleID string, body
 //
 //	GET /edit/tools
 func (c *Client) ListEditTools(ctx context.Context) (*ListEditToolsOkJSONResponse, error) {
-	return ListEditTools[ListEditToolsOkJSONResponse](ctx, c)
+	return c.ListEditToolsWithResult[ListEditToolsOkJSONResponse](ctx)
 }
 
 // List enabled canvas edit tools
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /edit/tools
-func ListEditTools[R any](ctx context.Context, c *Client) (*R, error) {
+func (c *Client) ListEditToolsWithResult[R any](ctx context.Context) (*R, error) {
 	u := c.baseURL.JoinPath("edit", "tools")
 	req := (&http.Request{
 		Header: http.Header{
+			"X-Rd-Token": []string{c.apiKey},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -603,18 +660,19 @@ func ListEditTools[R any](ctx context.Context, c *Client) (*R, error) {
 //
 //	POST /edit/tools/{tool_id}
 func (c *Client) RunEditTool(ctx context.Context, toolID string, body EditToolRequest) (*EditToolResponse, error) {
-	return RunEditTool[EditToolResponse](ctx, c, toolID, body)
+	return c.RunEditToolWithResult[EditToolResponse](ctx, toolID, body)
 }
 
 // Tools: image_edit, inpainting, outpainting, seam_tiling, background_remover, color_style_transfer, color_reducer, palette_converter, k_centroid_downscale, pixel_correction, rotate. Free tools may require min balance $0.01.
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /edit/tools/{tool_id}
-func RunEditTool[R any](ctx context.Context, c *Client, toolID string, body EditToolRequest) (*R, error) {
+func (c *Client) RunEditToolWithResult[R any](ctx context.Context, toolID string, body EditToolRequest) (*R, error) {
 	u := c.baseURL.JoinPath("edit", "tools", toolID)
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
+			"X-Rd-Token":   []string{c.apiKey},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -669,18 +727,19 @@ func RunEditTool[R any](ctx context.Context, c *Client, toolID string, body Edit
 //
 //	POST /edit/tools/{tool_id}/estimate
 func (c *Client) EstimateEditToolCost(ctx context.Context, toolID string, body EditToolRequest) (*EditToolEstimate, error) {
-	return EstimateEditToolCost[EditToolEstimate](ctx, c, toolID, body)
+	return c.EstimateEditToolCostWithResult[EditToolEstimate](ctx, toolID, body)
 }
 
 // Estimate edit tool cost (no run)
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /edit/tools/{tool_id}/estimate
-func EstimateEditToolCost[R any](ctx context.Context, c *Client, toolID string, body EditToolRequest) (*R, error) {
+func (c *Client) EstimateEditToolCostWithResult[R any](ctx context.Context, toolID string, body EditToolRequest) (*R, error) {
 	u := c.baseURL.JoinPath("edit", "tools", toolID, "estimate")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
+			"X-Rd-Token":   []string{c.apiKey},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -726,18 +785,19 @@ func EstimateEditToolCost[R any](ctx context.Context, c *Client, toolID string, 
 //
 //	POST /pixel-fixer/standard
 func (c *Client) FixPixelArtStandard(ctx context.Context, body PixelFixerRequest) (*PixelFixerResponse, error) {
-	return FixPixelArtStandard[PixelFixerResponse](ctx, c, body)
+	return c.FixPixelArtStandardWithResult[PixelFixerResponse](ctx, body)
 }
 
 // Native Rust grid detection. 16x16 to 16 megapixels. Rate limits: 120/min with purchase history, else 10/min. Shared with neural.
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /pixel-fixer/standard
-func FixPixelArtStandard[R any](ctx context.Context, c *Client, body PixelFixerRequest) (*R, error) {
+func (c *Client) FixPixelArtStandardWithResult[R any](ctx context.Context, body PixelFixerRequest) (*R, error) {
 	u := c.baseURL.JoinPath("pixel-fixer", "standard")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
+			"X-Rd-Token":   []string{c.apiKey},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -792,18 +852,19 @@ func FixPixelArtStandard[R any](ctx context.Context, c *Client, body PixelFixerR
 //
 //	POST /pixel-fixer/neural
 func (c *Client) FixPixelArtNeural(ctx context.Context, body PixelFixerRequest) (*PixelFixerResponse, error) {
-	return FixPixelArtNeural[PixelFixerResponse](ctx, c, body)
+	return c.FixPixelArtNeuralWithResult[PixelFixerResponse](ctx, body)
 }
 
 // Accepts larger sources, bilinear-downscales above 1MP budget. Optional width/height target (capped 16MP).
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /pixel-fixer/neural
-func FixPixelArtNeural[R any](ctx context.Context, c *Client, body PixelFixerRequest) (*R, error) {
+func (c *Client) FixPixelArtNeuralWithResult[R any](ctx context.Context, body PixelFixerRequest) (*R, error) {
 	u := c.baseURL.JoinPath("pixel-fixer", "neural")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
+			"X-Rd-Token":   []string{c.apiKey},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -858,17 +919,18 @@ func FixPixelArtNeural[R any](ctx context.Context, c *Client, body PixelFixerReq
 //
 //	GET /status
 func (c *Client) GetServiceStatus(ctx context.Context) (*StatusResponse, error) {
-	return GetServiceStatus[StatusResponse](ctx, c)
+	return c.GetServiceStatusWithResult[StatusResponse](ctx)
 }
 
 // Service status (no auth)
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /status
-func GetServiceStatus[R any](ctx context.Context, c *Client) (*R, error) {
+func (c *Client) GetServiceStatusWithResult[R any](ctx context.Context) (*R, error) {
 	u := c.baseURL.JoinPath("status")
 	req := (&http.Request{
 		Header: http.Header{
+			"X-Rd-Token": []string{c.apiKey},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,

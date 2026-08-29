@@ -5,14 +5,19 @@
 package retrodiffusion
 
 import (
+	"bytes"
 	"encoding/json/jsontext"
 	"errors"
+	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"slices"
 	"testing"
 
+	"github.com/MarkRosemaker/openapi-enrich/cassette"
 	"github.com/go-api-libs/api"
 )
 
@@ -34,6 +39,8 @@ func (f roundTripFunc) RoundTrip(r *http.Request) (*http.Response, error) {
 
 func TestClient_Error(t *testing.T) {
 	t.Run("CreateInference", func(t *testing.T) {
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: roundTripFunc(
 				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
@@ -126,6 +133,8 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("GetInferenceJob", func(t *testing.T) {
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: roundTripFunc(
 				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
@@ -218,6 +227,8 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("GetInferenceRequest", func(t *testing.T) {
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: roundTripFunc(
 				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
@@ -310,6 +321,8 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("GetBalance", func(t *testing.T) {
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: roundTripFunc(
 				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
@@ -402,6 +415,8 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("ListAvailableStyles", func(t *testing.T) {
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: roundTripFunc(
 				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
@@ -494,6 +509,8 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("CreateUserStyle", func(t *testing.T) {
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: roundTripFunc(
 				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
@@ -586,6 +603,8 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("DeleteUserStyle", func(t *testing.T) {
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: roundTripFunc(
 				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
@@ -678,6 +697,8 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("UpdateUserStyle", func(t *testing.T) {
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: roundTripFunc(
 				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
@@ -770,6 +791,8 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("ListEditTools", func(t *testing.T) {
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: roundTripFunc(
 				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
@@ -862,6 +885,8 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("RunEditTool", func(t *testing.T) {
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: roundTripFunc(
 				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
@@ -954,6 +979,8 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("EstimateEditToolCost", func(t *testing.T) {
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: roundTripFunc(
 				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
@@ -1046,6 +1073,8 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("FixPixelArtStandard", func(t *testing.T) {
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: roundTripFunc(
 				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
@@ -1138,6 +1167,8 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("FixPixelArtNeural", func(t *testing.T) {
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: roundTripFunc(
 				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
@@ -1230,6 +1261,8 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("GetServiceStatus", func(t *testing.T) {
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: roundTripFunc(
 				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
@@ -1320,4 +1353,77 @@ func TestClient_Error(t *testing.T) {
 			}
 		})
 	})
+}
+
+func replay(t *testing.T) http.RoundTripper {
+	t.Helper()
+
+	interactions, err := cassette.InteractionsReadFile("../../api/interactions.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var idx int
+	return roundTripFunc(func(req *http.Request) (*http.Response, error) {
+		if idx >= len(interactions) {
+			return nil, fmt.Errorf("unexpected request: %s %s", req.Method, req.URL)
+		}
+
+		ia := interactions[idx]
+
+		r, err := cassette.NewRequest(req)
+		if err != nil {
+			return nil, err
+		}
+
+		if r.URL != ia.Request.URL {
+			return nil, fmt.Errorf("interaction #%d: got URL %s, want %s", idx, r.URL, ia.Request.URL)
+		}
+
+		if r.Method != ia.Request.Method {
+			return nil, fmt.Errorf("interaction #%d: got method %s, want %s", idx, r.Method, ia.Request.Method)
+		}
+
+		if !bytes.Equal(r.Body, ia.Request.Body) {
+			return nil, fmt.Errorf("interaction #%d: got body %s, want %s", idx, string(r.Body), string(ia.Request.Method))
+		}
+
+		if ia.Request.Headers == nil {
+			ia.Request.Headers = http.Header{}
+		}
+
+		ia.Request.Headers.Set("User-Agent", defaultUserAgent)
+
+		if len(ia.Request.Body) == 0 {
+			ia.Request.Headers.Del("Content-Type")
+		}
+
+		if !maps.EqualFunc(r.Headers, ia.Request.Headers, slices.Equal) {
+			return nil, fmt.Errorf("interaction #%d: got headers %s, want %s", idx, r.Headers, ia.Request.Headers)
+		}
+
+		idx++
+		return &http.Response{
+			Status:     fmt.Sprintf("%d %s", ia.Response.StatusCode, http.StatusText(ia.Response.StatusCode)),
+			StatusCode: ia.Response.StatusCode,
+			Header:     ia.Response.Headers.Clone(),
+			Body:       io.NopCloser(bytes.NewReader(ia.Response.Body)),
+		}, nil
+	})
+}
+
+func TestClient_Interactions(t *testing.T) {
+	ctx := t.Context()
+	t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+
+	c, err := NewClient(WithHTTPClient(&http.Client{Transport: replay(t)}))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := c.ListAvailableStyles(ctx, &ListAvailableStylesParams{
+		Model: "rd_pro",
+	}); err != nil {
+		t.Fatalf("ListAvailableStyles: %v", err)
+	}
 }
