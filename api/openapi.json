@@ -714,8 +714,7 @@
             "example": "security officer (a soldier). A 34-year-old male human. Lean and wiry, with a posture that suggests he's always expecting something to break. He wears the standard grey-blue security fatigues, kept meticulously clean despite the dust of the colony. A thin, jagged scar running through his left eyebrow. He has a habit of clicking his tongue when he's impatient."
           },
           "prompt_style": {
-            "description": "Style id e.g. rd_fast__default, rd_pro__default, rd_plus__default, animation/tile variants, or user__name_id",
-            "type": "string"
+            "$ref": "#/components/schemas/PromptStyle"
           },
           "width": {
             "description": "Style-enforced tighter limits apply (most top out at 384)",
@@ -900,6 +899,14 @@
           }
         }
       },
+      "PromptStyle": {
+        "description": "Style id e.g. rd_fast__default, rd_pro__default, rd_plus__default, animation/tile variants, or user__name_id",
+        "type": "string",
+        "enum": [
+          "rd_animation__8_dir_rotation"
+        ],
+        "example": "rd_animation__8_dir_rotation"
+      },
       "StatusResponse": {
         "type": "object",
         "properties": {
@@ -918,8 +925,7 @@
         "type": "object",
         "properties": {
           "prompt_style": {
-            "type": "string",
-            "example": "rd_animation__8_dir_rotation"
+            "$ref": "#/components/schemas/PromptStyle"
           },
           "name": {
             "type": "string",

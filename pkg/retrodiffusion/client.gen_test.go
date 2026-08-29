@@ -1426,4 +1426,8 @@ func TestClient_Interactions(t *testing.T) {
 	}); err != nil {
 		t.Fatalf("ListAvailableStyles: %v", err)
 	}
+
+	if _, err := c.ListAvailableStyles(ctx, &ListAvailableStylesParams{}); err != nil {
+		t.Fatalf("ListAvailableStyles: %v", err)
+	}
 }

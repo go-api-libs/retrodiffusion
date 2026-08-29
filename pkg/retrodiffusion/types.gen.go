@@ -192,7 +192,7 @@ type InferenceRequest struct {
 	// Describe the SUBJECT only. Never write 'pixel art'.
 	Prompt string `json:"prompt,omitzero"`
 	// Style id e.g. rd_fast__default, rd_pro__default, rd_plus__default, animation/tile variants, or user__name_id
-	PromptStyle string `json:"prompt_style,omitzero"`
+	PromptStyle PromptStyle `json:"prompt_style,omitzero"`
 	// Style-enforced tighter limits apply (most top out at 384)
 	Width     int `json:"width,omitzero"`
 	Height    int `json:"height,omitzero"`
@@ -281,6 +281,23 @@ type PixelFixerResponse struct {
 	Base64Images [1]string `json:"base64_images,omitzero"`
 }
 
+// Style id e.g. rd_fast__default, rd_pro__default, rd_plus__default, animation/tile variants, or user__name_id
+type PromptStyle string
+
+const (
+	PromptStyleRdAnimation8DirRotation PromptStyle = "rd_animation__8_dir_rotation"
+)
+
+// Valid indicates whether the value is a known member of the PromptStyle enum.
+func (e PromptStyle) Valid() bool {
+	switch e {
+	case PromptStyleRdAnimation8DirRotation:
+		return true
+	default:
+		return false
+	}
+}
+
 // StatusResponse defines a model
 type StatusResponse struct {
 	Status    *map[string]string `json:"status,omitempty"`
@@ -289,20 +306,21 @@ type StatusResponse struct {
 
 // Style defines a model
 type Style struct {
-	PromptStyle             string `json:"prompt_style,omitzero"`
-	Name                    string `json:"name,omitzero"`
-	Description             string `json:"description,omitzero"`
-	RequiredModel           Model  `json:"required_model,omitzero"`
-	RequiredTab             Tab    `json:"required_tab,omitzero"`
-	MinWidth                *int   `json:"min_width,omitempty"`
-	MaxWidth                *int   `json:"max_width,omitempty"`
-	MinHeight               *int   `json:"min_height,omitempty"`
-	MaxHeight               *int   `json:"max_height,omitempty"`
-	MaxNumberOfImages       *int   `json:"max_number_of_images,omitempty"`
-	RequireInputImage       bool   `json:"require_input_image,omitempty"`
-	SupportsReferenceImages bool   `json:"supports_reference_images,omitempty"`
-	ExamplePrompt           string `json:"example_prompt,omitzero"`
-	GroupID                 string `json:"group_id,omitzero"`
+	// Style id e.g. rd_fast__default, rd_pro__default, rd_plus__default, animation/tile variants, or user__name_id
+	PromptStyle             PromptStyle `json:"prompt_style,omitzero"`
+	Name                    string      `json:"name,omitzero"`
+	Description             string      `json:"description,omitzero"`
+	RequiredModel           Model       `json:"required_model,omitzero"`
+	RequiredTab             Tab         `json:"required_tab,omitzero"`
+	MinWidth                *int        `json:"min_width,omitempty"`
+	MaxWidth                *int        `json:"max_width,omitempty"`
+	MinHeight               *int        `json:"min_height,omitempty"`
+	MaxHeight               *int        `json:"max_height,omitempty"`
+	MaxNumberOfImages       *int        `json:"max_number_of_images,omitempty"`
+	RequireInputImage       bool        `json:"require_input_image,omitempty"`
+	SupportsReferenceImages bool        `json:"supports_reference_images,omitempty"`
+	ExamplePrompt           string      `json:"example_prompt,omitzero"`
+	GroupID                 string      `json:"group_id,omitzero"`
 }
 
 // StyleDescriptors defines a model
