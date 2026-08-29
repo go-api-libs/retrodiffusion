@@ -27,7 +27,7 @@ func (e APIError) Error() string {
 		b.WriteString(d.Msg)
 
 		if d.Type != "" {
-			fmt.Fprintf(b, " (%s)", d.Msg, d.Type)
+			_, _ = fmt.Fprintf(b, " (%s)", d.Type)
 		}
 	}
 
