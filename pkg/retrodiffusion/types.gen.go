@@ -180,11 +180,14 @@ type Inference struct {
 	// Raw base64 PNG (or GIF for animations)
 	Base64Images []string `json:"base64_images,omitzero"`
 	// 15-minute signed URLs when upload_outputs=true
-	OutputUrls           []string `json:"output_urls,omitzero"`
-	Model                string   `json:"model,omitzero"`
-	RemainingBalance     *float64 `json:"remaining_balance,omitempty"`
-	RequestID            string   `json:"request_id,omitzero"`
-	OutputsRetainedUntil *int     `json:"outputs_retained_until,omitempty"`
+	OutputUrls           []string   `json:"output_urls,omitzero"`
+	Model                string     `json:"model,omitzero"`
+	RemainingBalance     *float64   `json:"remaining_balance,omitempty"`
+	RequestID            string     `json:"request_id,omitzero"`
+	OutputsRetainedUntil *int       `json:"outputs_retained_until,omitempty"`
+	CreditCost           *int       `json:"credit_cost,omitempty"`
+	OutputImages         []struct{} `json:"output_images,omitzero"`
+	RemainingCredits     *int       `json:"remaining_credits,omitempty"`
 }
 
 // InferenceRequest defines a model

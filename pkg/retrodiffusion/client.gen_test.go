@@ -1430,4 +1430,8 @@ func TestClient_Interactions(t *testing.T) {
 	if _, err := c.ListAvailableStyles(ctx, &ListAvailableStylesParams{}); err != nil {
 		t.Fatalf("ListAvailableStyles: %v", err)
 	}
+
+	if _, err := c.CreateInference(ctx, InferenceRequest{}); err != nil {
+		t.Fatalf("CreateInference: %v", err)
+	}
 }

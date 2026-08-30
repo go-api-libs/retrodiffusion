@@ -672,36 +672,59 @@
         "type": "object",
         "properties": {
           "created_at": {
-            "type": "integer"
+            "type": "integer",
+            "example": 1788096424
           },
           "balance_cost": {
-            "type": "number"
+            "type": "number",
+            "format": "double",
+            "example": 0.18
           },
           "base64_images": {
             "description": "Raw base64 PNG (or GIF for animations)",
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "example": null
             }
           },
           "output_urls": {
             "description": "15-minute signed URLs when upload_outputs=true",
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "example": null
             }
           },
           "model": {
-            "type": "string"
+            "type": "string",
+            "example": "check_cost"
           },
           "remaining_balance": {
-            "type": "number"
+            "type": "number",
+            "format": "double",
+            "example": 0.5
           },
           "request_id": {
             "type": "string"
           },
           "outputs_retained_until": {
             "type": "integer"
+          },
+          "credit_cost": {
+            "type": "integer",
+            "example": 0
+          },
+          "output_images": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "example": null
+            }
+          },
+          "remaining_credits": {
+            "type": "integer",
+            "example": 0
           }
         }
       },
