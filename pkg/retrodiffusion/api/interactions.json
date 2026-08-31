@@ -1518,5 +1518,613 @@
 			},
 			"body": "invalid json"
 		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "http://127.0.0.1:36545/inferences",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			},
+			"body": {
+				"width": 0,
+				"height": 0,
+				"num_images": 0,
+				"remove_bg": false,
+				"tile_x": false,
+				"tile_y": false,
+				"return_spritesheet": false,
+				"bypass_prompt_expansion": false,
+				"include_downloadable_data": false,
+				"check_cost": false,
+				"async": false,
+				"upload_outputs": false
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:12 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "http://127.0.0.1:35083/inferences/tasks",
+			"header": {
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:12 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "http://127.0.0.1:44537/inferences/requests",
+			"header": {
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:12 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "http://127.0.0.1:38201/inferences/credits",
+			"header": {
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:12 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "http://127.0.0.1:36237/styles/selector",
+			"header": {
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:12 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "http://127.0.0.1:33093/styles",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			},
+			"body": {
+				"apply_prompt_fixer": false,
+				"force_palette": false,
+				"force_bg_removal": false
+			}
+		},
+		"response": {
+			"statusCode": 201,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:12 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "DELETE",
+			"url": "http://127.0.0.1:44195/styles",
+			"header": {
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:12 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "PATCH",
+			"url": "http://127.0.0.1:45553/styles",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:12 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "http://127.0.0.1:43455/edit/tools",
+			"header": {
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:12 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "http://127.0.0.1:38351/edit/tools",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			},
+			"body": {
+				"soft_inpaint": false,
+				"tile_x": false,
+				"tile_y": false,
+				"force_solid_pixels": false
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:12 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "http://127.0.0.1:32949/edit/tools/estimate",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			},
+			"body": {
+				"soft_inpaint": false,
+				"tile_x": false,
+				"tile_y": false,
+				"force_solid_pixels": false
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:12 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "http://127.0.0.1:37467/pixel-fixer/standard",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:12 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "http://127.0.0.1:44047/pixel-fixer/neural",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:12 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "http://127.0.0.1:44929/status",
+			"header": {
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:12 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "http://127.0.0.1:39589/inferences",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			},
+			"body": {
+				"width": 0,
+				"height": 0,
+				"num_images": 0,
+				"remove_bg": false,
+				"tile_x": false,
+				"tile_y": false,
+				"return_spritesheet": false,
+				"bypass_prompt_expansion": false,
+				"include_downloadable_data": false,
+				"check_cost": false,
+				"async": false,
+				"upload_outputs": false
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:15 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "http://127.0.0.1:39073/inferences/tasks",
+			"header": {
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:15 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "http://127.0.0.1:41327/inferences/requests",
+			"header": {
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:15 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "http://127.0.0.1:41529/inferences/credits",
+			"header": {
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:15 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "http://127.0.0.1:40043/styles/selector",
+			"header": {
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:16 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "http://127.0.0.1:42963/styles",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			},
+			"body": {
+				"apply_prompt_fixer": false,
+				"force_palette": false,
+				"force_bg_removal": false
+			}
+		},
+		"response": {
+			"statusCode": 201,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:16 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "DELETE",
+			"url": "http://127.0.0.1:46767/styles",
+			"header": {
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:16 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "PATCH",
+			"url": "http://127.0.0.1:45885/styles",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:16 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "http://127.0.0.1:33519/edit/tools",
+			"header": {
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:16 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "http://127.0.0.1:38181/edit/tools",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			},
+			"body": {
+				"soft_inpaint": false,
+				"tile_x": false,
+				"tile_y": false,
+				"force_solid_pixels": false
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:16 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "http://127.0.0.1:42985/edit/tools/estimate",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			},
+			"body": {
+				"soft_inpaint": false,
+				"tile_x": false,
+				"tile_y": false,
+				"force_solid_pixels": false
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:16 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "http://127.0.0.1:34065/pixel-fixer/standard",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:16 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "http://127.0.0.1:42079/pixel-fixer/neural",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:16 GMT"
+			},
+			"body": "invalid json"
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "http://127.0.0.1:44795/status",
+			"header": {
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Length": "12",
+				"Content-Type": "application/json",
+				"Date": "Mon, 31 Aug 2026 20:58:16 GMT"
+			},
+			"body": "invalid json"
+		}
 	}
 ]
