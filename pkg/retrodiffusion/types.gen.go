@@ -197,9 +197,9 @@ type InferenceRequest struct {
 	// Style id e.g. rd_fast__default, rd_pro__default, rd_plus__default, animation/tile variants, or user__name_id
 	PromptStyle PromptStyle `json:"prompt_style,omitzero"`
 	// Style-enforced tighter limits apply (most top out at 384)
-	Width     int `json:"width,omitzero"`
-	Height    int `json:"height,omitzero"`
-	NumImages int `json:"num_images,omitzero"`
+	Width     int `json:"width"`
+	Height    int `json:"height"`
+	NumImages int `json:"num_images"`
 	// Reproducible generation
 	Seed *int `json:"seed,omitempty"`
 	// Raw base64 PNG (no data: URI prefix), RGB no transparency. Required for img2img, advanced animation, some edit tools.

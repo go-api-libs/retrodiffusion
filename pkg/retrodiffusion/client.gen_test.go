@@ -1384,8 +1384,14 @@ func replay(t *testing.T) http.RoundTripper {
 			return nil, fmt.Errorf("interaction #%d: got method %s, want %s", idx, r.Method, ia.Request.Method)
 		}
 
-		if !bytes.Equal(r.Body, ia.Request.Body) {
-			return nil, fmt.Errorf("interaction #%d: got body %s, want %s", idx, string(r.Body), string(ia.Request.Method))
+		gotBody := jsontext.Value(r.Body)
+		gotBody.Canonicalize()
+
+		wantBody := jsontext.Value(ia.Request.Body)
+		wantBody.Canonicalize()
+
+		if !bytes.Equal(gotBody, wantBody) {
+			return nil, fmt.Errorf("interaction #%d: got body %s, want %s", idx, string(gotBody), string(wantBody))
 		}
 
 		if ia.Request.Headers == nil {
@@ -1431,7 +1437,22 @@ func TestClient_Interactions(t *testing.T) {
 		t.Fatalf("ListAvailableStyles: %v", err)
 	}
 
-	if _, err := c.CreateInference(ctx, InferenceRequest{}); err != nil {
+	if _, err := c.CreateInference(ctx, InferenceRequest{
+		Prompt:                  "security officer (a soldier). A 34-year-old male human. Lean and wiry, with a posture that suggests he's always expecting something to break. He wears the standard grey-blue security fatigues, kept meticulously clean despite the dust of the colony. A thin, jagged scar running through his left eyebrow. He has a habit of clicking his tongue when he's impatient.",
+		PromptStyle:             PromptStyleRdProTopdown,
+		Width:                   128,
+		Height:                  128,
+		NumImages:               1,
+		RemoveBg:                true,
+		TileX:                   false,
+		TileY:                   false,
+		ReturnSpritesheet:       false,
+		BypassPromptExpansion:   false,
+		IncludeDownloadableData: false,
+		CheckCost:               true,
+		Async:                   false,
+		UploadOutputs:           false,
+	}); err != nil {
 		t.Fatalf("CreateInference: %v", err)
 	}
 }
