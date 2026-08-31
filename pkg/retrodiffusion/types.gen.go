@@ -7,6 +7,7 @@ package retrodiffusion
 import (
 	"encoding/json/v2"
 	"net/url"
+	"time"
 
 	"github.com/MarkRosemaker/jsonutil"
 )
@@ -175,16 +176,16 @@ type Errors struct {
 
 // Inference defines a model
 type Inference struct {
-	CreatedAt   *int     `json:"created_at,omitempty"`
-	BalanceCost *float64 `json:"balance_cost,omitempty"`
+	CreatedAt   time.Time `json:"created_at"`
+	BalanceCost float64   `json:"balance_cost"`
 	// Raw base64 PNG (or GIF for animations)
-	Base64Images []string `json:"base64_images,omitzero"`
+	Base64Images []string `json:"base64_images"`
 	// 15-minute signed URLs when upload_outputs=true
 	OutputUrls           []string   `json:"output_urls,omitzero"`
 	Model                string     `json:"model,omitzero"`
-	RemainingBalance     *float64   `json:"remaining_balance,omitempty"`
+	RemainingBalance     float64    `json:"remaining_balance"`
 	RequestID            string     `json:"request_id,omitzero"`
-	OutputsRetainedUntil *int       `json:"outputs_retained_until,omitempty"`
+	OutputsRetainedUntil int        `json:"outputs_retained_until"`
 	CreditCost           *int       `json:"credit_cost,omitempty"`
 	OutputImages         []struct{} `json:"output_images,omitzero"`
 	RemainingCredits     *int       `json:"remaining_credits,omitempty"`

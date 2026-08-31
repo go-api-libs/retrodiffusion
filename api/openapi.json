@@ -673,6 +673,7 @@
         "properties": {
           "created_at": {
             "type": "integer",
+            "format": "date-time",
             "example": 1788096424
           },
           "balance_cost": {
@@ -726,7 +727,16 @@
             "type": "integer",
             "example": 0
           }
-        }
+        },
+        "required": [
+          "created_at",
+          "balance_cost",
+          "base64_images",
+          "model",
+          "remaining_balance",
+          "request_id",
+          "outputs_retained_until"
+        ]
       },
       "InferenceRequest": {
         "type": "object",
