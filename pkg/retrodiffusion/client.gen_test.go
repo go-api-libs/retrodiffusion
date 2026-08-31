@@ -1455,4 +1455,24 @@ func TestClient_Interactions(t *testing.T) {
 	}); err != nil {
 		t.Fatalf("CreateInference: %v", err)
 	}
+
+	if _, err := c.CreateInference(ctx, InferenceRequest{
+		Prompt:                  "security officer (a soldier). A 34-year-old male human. Lean and wiry, with a posture that suggests he's always expecting something to break. He wears the standard grey-blue security fatigues, kept meticulously clean despite the dust of the colony. A thin, jagged scar running through his left eyebrow. He has a habit of clicking his tongue when he's impatient.",
+		PromptStyle:             PromptStyleGameAssetrdFlux,
+		Width:                   64,
+		Height:                  64,
+		NumImages:               1,
+		RemoveBg:                true,
+		TileX:                   false,
+		TileY:                   false,
+		ReturnSpritesheet:       false,
+		UpscaleOutputFactor:     new(1),
+		BypassPromptExpansion:   true,
+		IncludeDownloadableData: false,
+		CheckCost:               false,
+		Async:                   false,
+		UploadOutputs:           false,
+	}); err != nil {
+		t.Fatalf("CreateInference: %v", err)
+	}
 }

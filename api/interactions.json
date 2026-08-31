@@ -2325,5 +2325,52 @@
 				"remaining_balance": 0.5
 			}
 		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "https://api.retrodiffusion.ai/v1/inferences",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			},
+			"body": {
+				"prompt": "security officer (a soldier). A 34-year-old male human. Lean and wiry, with a posture that suggests he's always expecting something to break. He wears the standard grey-blue security fatigues, kept meticulously clean despite the dust of the colony. A thin, jagged scar running through his left eyebrow. He has a habit of clicking his tongue when he's impatient.",
+				"prompt_style": "game_asset:rd_flux",
+				"width": 64,
+				"height": 64,
+				"num_images": 1,
+				"remove_bg": true,
+				"tile_x": false,
+				"tile_y": false,
+				"return_spritesheet": false,
+				"upscale_output_factor": 1,
+				"bypass_prompt_expansion": true,
+				"include_downloadable_data": false,
+				"check_cost": false,
+				"async": false,
+				"upload_outputs": false
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json"
+			},
+			"body": {
+				"created_at": 1788216315,
+				"credit_cost": 1,
+				"balance_cost": 0.017,
+				"base64_images": [
+					"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"
+				],
+				"model": "rd_fast",
+				"remaining_credits": 0,
+				"remaining_balance": 0.483,
+				"request_id": "38cc4f48-cbcd-4420-ae51-3c3ec21e5b41",
+				"outputs_retained_until": 1788302691
+			}
+		}
 	}
 ]
