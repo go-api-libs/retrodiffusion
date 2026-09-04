@@ -187,7 +187,7 @@ func (c *Client) CreateInferenceWithResult[R any](ctx context.Context, body Infe
 		// Invalid input or insufficient balance
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out APIError
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if c.debug {
 					if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {

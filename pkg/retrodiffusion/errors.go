@@ -5,6 +5,10 @@ import (
 	"strings"
 )
 
+func (e Error) Error() string {
+	return fmt.Sprintf("%s (code: %s, request ID: %s)", e.Detail.Message, e.Detail.Code, e.Detail.RequestID)
+}
+
 func (e APIError) Error() string {
 	b := &strings.Builder{}
 

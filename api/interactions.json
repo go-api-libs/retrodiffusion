@@ -2372,5 +2372,46 @@
 				"outputs_retained_until": 1788302691
 			}
 		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "https://api.retrodiffusion.ai/v1/inferences",
+			"header": {
+				"Content-Type": "application/json",
+				"User-Agent": "Retro Diffusion API",
+				"X-Rd-Token": "************************************************"
+			},
+			"body": {
+				"prompt": "A lean, wiry security officer in their thirties, in clean grey-blue colony security fatigues with a circular Ares Prime colony patch on the left shoulder and no other insignia, a thin jagged scar through the left eyebrow, standing straight-backed and alert.",
+				"prompt_style": "rd_animation__8_dir_rotation",
+				"width": 80,
+				"height": 80,
+				"num_images": 1,
+				"remove_bg": true,
+				"tile_x": false,
+				"tile_y": false,
+				"return_spritesheet": true,
+				"upscale_output_factor": 1,
+				"bypass_prompt_expansion": true,
+				"include_downloadable_data": false,
+				"check_cost": false,
+				"async": false,
+				"upload_outputs": false
+			}
+		},
+		"response": {
+			"statusCode": 400,
+			"header": {
+				"Content-Type": "application/json"
+			},
+			"body": {
+				"detail": {
+					"code": "inference_failed",
+					"message": "Unable to run inference.",
+					"request_id": "070ef31d-b384-426e-b4e8-3773d9ad1c94"
+				}
+			}
+		}
 	}
 ]

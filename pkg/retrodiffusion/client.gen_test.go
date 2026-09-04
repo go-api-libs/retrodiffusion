@@ -1475,4 +1475,26 @@ func TestClient_Interactions(t *testing.T) {
 	}); err != nil {
 		t.Fatalf("CreateInference: %v", err)
 	}
+
+	if _, err := c.CreateInference(ctx, InferenceRequest{
+		Prompt:                  "A lean, wiry security officer in their thirties, in clean grey-blue colony security fatigues with a circular Ares Prime colony patch on the left shoulder and no other insignia, a thin jagged scar through the left eyebrow, standing straight-backed and alert.",
+		PromptStyle:             PromptStyleRdAnimation8DirRotation,
+		Width:                   80,
+		Height:                  80,
+		NumImages:               1,
+		RemoveBg:                true,
+		TileX:                   false,
+		TileY:                   false,
+		ReturnSpritesheet:       true,
+		UpscaleOutputFactor:     new(1),
+		BypassPromptExpansion:   true,
+		IncludeDownloadableData: false,
+		CheckCost:               false,
+		Async:                   false,
+		UploadOutputs:           false,
+	}); err == nil {
+		t.Fatal("CreateInference: expected error")
+	} else if _, ok := errors.AsType[*Error](err); !ok {
+		t.Fatalf("CreateInference: got: %T, want: *Error", err)
+	}
 }

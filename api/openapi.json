@@ -628,12 +628,24 @@
         "type": "object",
         "properties": {
           "code": {
-            "type": "string"
+            "type": "string",
+            "example": "inference_failed"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "example": "Unable to run inference."
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "070ef31d-b384-426e-b4e8-3773d9ad1c94"
           }
-        }
+        },
+        "required": [
+          "code",
+          "message",
+          "request_id"
+        ]
       },
       "ErrorWithLocation": {
         "type": "object",
@@ -1195,7 +1207,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/APIError"
+              "$ref": "#/components/schemas/Error"
             }
           }
         }

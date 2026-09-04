@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/MarkRosemaker/jsonutil"
+	"github.com/google/uuid"
 )
 
 var jsonOpts = json.JoinOptions(
@@ -158,8 +159,9 @@ type ErrorDetails []ErrorDetail
 
 // ErrorWithCode defines a model
 type ErrorWithCode struct {
-	Code    string `json:"code,omitzero"`
-	Message string `json:"message,omitzero"`
+	Code      string    `json:"code,omitzero"`
+	Message   string    `json:"message,omitzero"`
+	RequestID uuid.UUID `json:"request_id,omitzero"`
 }
 
 // ErrorWithLocation defines a model
