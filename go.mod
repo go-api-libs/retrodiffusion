@@ -13,6 +13,7 @@ require (
 	github.com/MarkRosemaker/jsonutil v0.0.0-20260827160132-fe5e496a04a0
 	github.com/MarkRosemaker/openapi-enrich v0.0.0-20260831174706-83a704a7d0d8
 	github.com/go-api-libs/api v0.0.0-20260827160132-fe8c2393f615
+	github.com/google/uuid v1.6.0
 )
 
 require (
@@ -31,7 +32,6 @@ require (
 	github.com/MarkRosemaker/yaml2json v0.0.0-20260827160130-ff9effdeb201 // indirect
 	github.com/ettle/strcase v0.2.0 // indirect
 	github.com/go-api-libs/types v0.0.0-20260821232109-0cf45378823e // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/spf13/afero v1.15.0 // indirect
 	golang.org/x/exp v0.0.0-20260824195058-e88cd73687aa // indirect
 	golang.org/x/mod v0.40.0 // indirect
