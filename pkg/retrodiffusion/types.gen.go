@@ -75,7 +75,7 @@ type DeleteUserStyleOkJSONResponse struct {
 
 // EditToolEstimate defines a model
 type EditToolEstimate struct {
-	ToolID          string   `json:"tool_id,omitzero"`
+	ToolID          ToolID   `json:"tool_id,omitzero"`
 	BalanceCost     *float64 `json:"balance_cost,omitempty"`
 	CreditCost      *float64 `json:"credit_cost,omitempty"`
 	EstimateSeconds *float64 `json:"estimate_seconds,omitempty"`
@@ -134,7 +134,7 @@ func (e EditToolRequestDitherMode) Valid() bool {
 
 // EditToolResponse defines a model
 type EditToolResponse struct {
-	ToolID           string   `json:"tool_id,omitzero"`
+	ToolID           ToolID   `json:"tool_id,omitzero"`
 	InferenceID      string   `json:"inference_id,omitzero"`
 	Base64Images     []string `json:"base64_images,omitzero"`
 	OutputUrls       []string `json:"output_urls,omitzero"`
@@ -481,6 +481,33 @@ const (
 func (e TaskStatusStatus) Valid() bool {
 	switch e {
 	case TaskStatusStatusPending, TaskStatusStatusRunning, TaskStatusStatusSucceeded, TaskStatusStatusFailed:
+		return true
+	default:
+		return false
+	}
+}
+
+// ToolID defines a model
+type ToolID string
+
+const (
+	ToolIDImageEdit          ToolID = "image_edit"
+	ToolIDInpainting         ToolID = "inpainting"
+	ToolIDOutpainting        ToolID = "outpainting"
+	ToolIDSeamTiling         ToolID = "seam_tiling"
+	ToolIDBackgroundRemover  ToolID = "background_remover"
+	ToolIDColorStyleTransfer ToolID = "color_style_transfer"
+	ToolIDColorReducer       ToolID = "color_reducer"
+	ToolIDPaletteConverter   ToolID = "palette_converter"
+	ToolIDKCentroidDownscale ToolID = "k_centroid_downscale"
+	ToolIDPixelCorrection    ToolID = "pixel_correction"
+	ToolIDRotate             ToolID = "rotate"
+)
+
+// Valid indicates whether the value is a known member of the ToolID enum.
+func (e ToolID) Valid() bool {
+	switch e {
+	case ToolIDImageEdit, ToolIDInpainting, ToolIDOutpainting, ToolIDSeamTiling, ToolIDBackgroundRemover, ToolIDColorStyleTransfer, ToolIDColorReducer, ToolIDPaletteConverter, ToolIDKCentroidDownscale, ToolIDPixelCorrection, ToolIDRotate:
 		return true
 	default:
 		return false

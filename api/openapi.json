@@ -464,7 +464,7 @@
         "type": "object",
         "properties": {
           "tool_id": {
-            "type": "string"
+            "$ref": "#/components/schemas/ToolID"
           },
           "balance_cost": {
             "type": "number"
@@ -575,7 +575,7 @@
         "type": "object",
         "properties": {
           "tool_id": {
-            "type": "string"
+            "$ref": "#/components/schemas/ToolID"
           },
           "inference_id": {
             "type": "string"
@@ -1204,6 +1204,22 @@
           "succeeded",
           "failed"
         ]
+      },
+      "ToolID": {
+        "type": "string",
+        "enum": [
+          "image_edit",
+          "inpainting",
+          "outpainting",
+          "seam_tiling",
+          "background_remover",
+          "color_style_transfer",
+          "color_reducer",
+          "palette_converter",
+          "k_centroid_downscale",
+          "pixel_correction",
+          "rotate"
+        ]
       }
     },
     "responses": {
@@ -1486,7 +1502,7 @@
         "in": "path",
         "required": true,
         "schema": {
-          "type": "string"
+          "$ref": "#/components/schemas/ToolID"
         }
       }
     },
