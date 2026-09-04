@@ -369,15 +369,23 @@
             "example": "accepted"
           },
           "task_id": {
-            "type": "string"
+            "type": "string",
+            "format": "uuid"
           },
           "request_id": {
-            "type": "string"
+            "type": "string",
+            "format": "uuid"
           },
           "message": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "status",
+          "task_id",
+          "request_id",
+          "message"
+        ]
       },
       "CreateStyleRequest": {
         "type": "object",
@@ -720,10 +728,12 @@
           },
           "request_id": {
             "type": "string",
+            "format": "uuid",
             "example": "38cc4f48-cbcd-4420-ae51-3c3ec21e5b41"
           },
           "outputs_retained_until": {
             "type": "integer",
+            "format": "date-time",
             "example": 1788302691
           },
           "credit_cost": {
@@ -1160,7 +1170,8 @@
             "$ref": "#/components/schemas/TaskStatusStatus"
           },
           "task_id": {
-            "type": "string"
+            "type": "string",
+            "format": "uuid"
           },
           "result": {
             "$ref": "#/components/schemas/Inference"
@@ -1168,7 +1179,11 @@
           "error": {
             "$ref": "#/components/schemas/TaskStatusError"
           }
-        }
+        },
+        "required": [
+          "status",
+          "task_id"
+        ]
       },
       "TaskStatusError": {
         "type": "object",
@@ -1438,7 +1453,8 @@
         "in": "path",
         "required": true,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "format": "uuid"
         }
       },
       "style_id": {
@@ -1446,7 +1462,7 @@
         "in": "path",
         "required": true,
         "schema": {
-          "type": "string"
+          "$ref": "#/components/schemas/PromptStyle"
         }
       },
       "tab": {
@@ -1461,7 +1477,8 @@
         "in": "path",
         "required": true,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "format": "uuid"
         }
       },
       "tool_id": {

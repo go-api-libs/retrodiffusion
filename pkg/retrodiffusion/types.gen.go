@@ -39,10 +39,10 @@ type APIErrorDetail []ErrorWithLocation
 
 // AsyncAccepted defines a model
 type AsyncAccepted struct {
-	Status    string `json:"status,omitzero"`
-	TaskID    string `json:"task_id,omitzero"`
-	RequestID string `json:"request_id,omitzero"`
-	Message   string `json:"message,omitzero"`
+	Status    string    `json:"status,omitzero"`
+	TaskID    uuid.UUID `json:"task_id,omitzero"`
+	RequestID uuid.UUID `json:"request_id,omitzero"`
+	Message   string    `json:"message,omitzero"`
 }
 
 // CreateStyleRequest defines a model
@@ -186,8 +186,8 @@ type Inference struct {
 	OutputUrls           []string   `json:"output_urls,omitzero"`
 	Model                string     `json:"model,omitzero"`
 	RemainingBalance     float64    `json:"remaining_balance"`
-	RequestID            string     `json:"request_id,omitzero"`
-	OutputsRetainedUntil int        `json:"outputs_retained_until"`
+	RequestID            uuid.UUID  `json:"request_id,omitzero"`
+	OutputsRetainedUntil time.Time  `json:"outputs_retained_until"`
 	CreditCost           *int       `json:"credit_cost,omitempty"`
 	OutputImages         []struct{} `json:"output_images,omitzero"`
 	RemainingCredits     *int       `json:"remaining_credits,omitempty"`
@@ -456,7 +456,7 @@ type Tabs []Tab
 // TaskStatus defines a model
 type TaskStatus struct {
 	Status TaskStatusStatus `json:"status,omitzero"`
-	TaskID string           `json:"task_id,omitzero"`
+	TaskID uuid.UUID        `json:"task_id,omitzero"`
 	Result *Inference       `json:"result,omitempty"`
 	Err    *TaskStatusError `json:"error,omitempty"`
 }

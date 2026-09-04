@@ -17,6 +17,7 @@ import (
 
 	"github.com/MarkRosemaker/openapi-enrich/cassette"
 	"github.com/go-api-libs/api"
+	"github.com/google/uuid"
 )
 
 const defaultUserAgent = "Retro Diffusion API"
@@ -254,7 +255,7 @@ func (c *Client) CreateInferenceWithResult[R any](ctx context.Context, body Infe
 // Poll async inference job
 //
 //	GET /inferences/tasks/{task_id}
-func (c *Client) GetInferenceJob(ctx context.Context, taskID string) (*TaskStatus, error) {
+func (c *Client) GetInferenceJob(ctx context.Context, taskID uuid.UUID) (*TaskStatus, error) {
 	return c.GetInferenceJobWithResult[TaskStatus](ctx, taskID)
 }
 
@@ -262,8 +263,8 @@ func (c *Client) GetInferenceJob(ctx context.Context, taskID string) (*TaskStatu
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /inferences/tasks/{task_id}
-func (c *Client) GetInferenceJobWithResult[R any](ctx context.Context, taskID string) (*R, error) {
-	u := c.baseURL.JoinPath("inferences", "tasks", taskID)
+func (c *Client) GetInferenceJobWithResult[R any](ctx context.Context, taskID uuid.UUID) (*R, error) {
+	u := c.baseURL.JoinPath("inferences", "tasks", taskID.String())
 	req := (&http.Request{
 		Header: http.Header{
 			"X-Rd-Token": []string{c.apiKey},
@@ -331,7 +332,7 @@ func (c *Client) GetInferenceJobWithResult[R any](ctx context.Context, taskID st
 // Returns status, settings, billing, and freshly signed output URLs. Any active personal key from owning account may retrieve after key rotation.
 //
 //	GET /inferences/requests/{request_id}
-func (c *Client) GetInferenceRequest(ctx context.Context, requestID string) (*InferenceRequestResult, error) {
+func (c *Client) GetInferenceRequest(ctx context.Context, requestID uuid.UUID) (*InferenceRequestResult, error) {
 	return c.GetInferenceRequestWithResult[InferenceRequestResult](ctx, requestID)
 }
 
@@ -339,8 +340,8 @@ func (c *Client) GetInferenceRequest(ctx context.Context, requestID string) (*In
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /inferences/requests/{request_id}
-func (c *Client) GetInferenceRequestWithResult[R any](ctx context.Context, requestID string) (*R, error) {
-	u := c.baseURL.JoinPath("inferences", "requests", requestID)
+func (c *Client) GetInferenceRequestWithResult[R any](ctx context.Context, requestID uuid.UUID) (*R, error) {
+	u := c.baseURL.JoinPath("inferences", "requests", requestID.String())
 	req := (&http.Request{
 		Header: http.Header{
 			"X-Rd-Token": []string{c.apiKey},
