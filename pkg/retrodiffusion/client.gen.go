@@ -14,10 +14,10 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"uuid"
 
 	"github.com/MarkRosemaker/openapi-enrich/cassette"
 	"github.com/go-api-libs/api"
-	"github.com/google/uuid"
 )
 
 const defaultUserAgent = "Retro Diffusion API"
