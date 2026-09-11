@@ -24,6 +24,7 @@ func (e APIError) Error() string {
 
 			b.WriteString(loc)
 		}
+
 		if len(d.Loc) > 0 {
 			b.WriteString(": ")
 		}
