@@ -7,6 +7,7 @@
 ## Additional Information
 
 - [**Go Reference**](https://pkg.go.dev/github.com/go-api-libs/retrodiffusion): API documentation.
+- [**OpenAPI Specification**](./api/openapi.json): The OpenAPI 3.0.3 specification.
 
 ## Contributing
 
