@@ -829,8 +829,13 @@ func (c *Client) UpdateUserStyleWithResult[R any](ctx context.Context, styleID s
 // List enabled canvas edit tools
 //
 //	GET /edit/tools
-func (c *Client) ListEditTools(ctx context.Context) (*ListEditToolsOkJSONResponse, error) {
-	return c.ListEditToolsWithResult[ListEditToolsOkJSONResponse](ctx)
+func (c *Client) ListEditTools(ctx context.Context) (ListEditToolsOkJSONResponse, error) {
+	out, err := c.ListEditToolsWithResult[ListEditToolsOkJSONResponse](ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return *out, nil
 }
 
 // List enabled canvas edit tools
