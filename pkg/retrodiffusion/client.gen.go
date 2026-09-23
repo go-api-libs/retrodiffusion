@@ -504,7 +504,7 @@ func (c *Client) ListAvailableStylesWithResult[R any](ctx context.Context, param
 		}
 
 		if params.Tab != "" {
-			q["tab"] = []string{params.Tab}
+			q["tab"] = []string{string(params.Tab)}
 		}
 
 		u.RawQuery = q.Encode()
@@ -674,7 +674,7 @@ func (c *Client) CreateUserStyleWithResult[R any](ctx context.Context, body Crea
 // Delete user style
 //
 //	DELETE /styles/{style_id}
-func (c *Client) DeleteUserStyle(ctx context.Context, styleID string) (*DeleteUserStyleOkJSONResponse, error) {
+func (c *Client) DeleteUserStyle(ctx context.Context, styleID PromptStyle) (*DeleteUserStyleOkJSONResponse, error) {
 	return c.DeleteUserStyleWithResult[DeleteUserStyleOkJSONResponse](ctx, styleID)
 }
 
@@ -682,8 +682,8 @@ func (c *Client) DeleteUserStyle(ctx context.Context, styleID string) (*DeleteUs
 // You can define a custom result to unmarshal the response into.
 //
 //	DELETE /styles/{style_id}
-func (c *Client) DeleteUserStyleWithResult[R any](ctx context.Context, styleID string) (*R, error) {
-	u := c.baseURL.JoinPath("styles", styleID)
+func (c *Client) DeleteUserStyleWithResult[R any](ctx context.Context, styleID PromptStyle) (*R, error) {
+	u := c.baseURL.JoinPath("styles", string(styleID))
 	req := (&http.Request{
 		Header: http.Header{
 			"X-Rd-Token": []string{c.apiKey},
@@ -748,7 +748,7 @@ func (c *Client) DeleteUserStyleWithResult[R any](ctx context.Context, styleID s
 // Update user style
 //
 //	PATCH /styles/{style_id}
-func (c *Client) UpdateUserStyle(ctx context.Context, styleID string, body *CreateStyleRequest) (*Style, error) {
+func (c *Client) UpdateUserStyle(ctx context.Context, styleID PromptStyle, body *CreateStyleRequest) (*Style, error) {
 	return c.UpdateUserStyleWithResult[Style](ctx, styleID, body)
 }
 
@@ -756,8 +756,8 @@ func (c *Client) UpdateUserStyle(ctx context.Context, styleID string, body *Crea
 // You can define a custom result to unmarshal the response into.
 //
 //	PATCH /styles/{style_id}
-func (c *Client) UpdateUserStyleWithResult[R any](ctx context.Context, styleID string, body *CreateStyleRequest) (*R, error) {
-	u := c.baseURL.JoinPath("styles", styleID)
+func (c *Client) UpdateUserStyleWithResult[R any](ctx context.Context, styleID PromptStyle, body *CreateStyleRequest) (*R, error) {
+	u := c.baseURL.JoinPath("styles", string(styleID))
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -908,7 +908,7 @@ func (c *Client) ListEditToolsWithResult[R any](ctx context.Context) (*R, error)
 // Tools: image_edit, inpainting, outpainting, seam_tiling, background_remover, color_style_transfer, color_reducer, palette_converter, k_centroid_downscale, pixel_correction, rotate. Free tools may require min balance $0.01.
 //
 //	POST /edit/tools/{tool_id}
-func (c *Client) RunEditTool(ctx context.Context, toolID string, body EditToolRequest) (*EditToolResponse, error) {
+func (c *Client) RunEditTool(ctx context.Context, toolID ToolID, body EditToolRequest) (*EditToolResponse, error) {
 	return c.RunEditToolWithResult[EditToolResponse](ctx, toolID, body)
 }
 
@@ -916,8 +916,8 @@ func (c *Client) RunEditTool(ctx context.Context, toolID string, body EditToolRe
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /edit/tools/{tool_id}
-func (c *Client) RunEditToolWithResult[R any](ctx context.Context, toolID string, body EditToolRequest) (*R, error) {
-	u := c.baseURL.JoinPath("edit", "tools", toolID)
+func (c *Client) RunEditToolWithResult[R any](ctx context.Context, toolID ToolID, body EditToolRequest) (*R, error) {
+	u := c.baseURL.JoinPath("edit", "tools", string(toolID))
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -998,7 +998,7 @@ func (c *Client) RunEditToolWithResult[R any](ctx context.Context, toolID string
 // Estimate edit tool cost (no run)
 //
 //	POST /edit/tools/{tool_id}/estimate
-func (c *Client) EstimateEditToolCost(ctx context.Context, toolID string, body EditToolRequest) (*EditToolEstimate, error) {
+func (c *Client) EstimateEditToolCost(ctx context.Context, toolID ToolID, body EditToolRequest) (*EditToolEstimate, error) {
 	return c.EstimateEditToolCostWithResult[EditToolEstimate](ctx, toolID, body)
 }
 
@@ -1006,8 +1006,8 @@ func (c *Client) EstimateEditToolCost(ctx context.Context, toolID string, body E
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /edit/tools/{tool_id}/estimate
-func (c *Client) EstimateEditToolCostWithResult[R any](ctx context.Context, toolID string, body EditToolRequest) (*R, error) {
-	u := c.baseURL.JoinPath("edit", "tools", toolID, "estimate")
+func (c *Client) EstimateEditToolCostWithResult[R any](ctx context.Context, toolID ToolID, body EditToolRequest) (*R, error) {
+	u := c.baseURL.JoinPath("edit", "tools", string(toolID), "estimate")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{

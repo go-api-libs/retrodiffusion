@@ -26,7 +26,7 @@ var jsonOpts = json.JoinOptions(
 // ListAvailableStylesParams holds the query parameters for ListAvailableStyles.
 type ListAvailableStylesParams struct {
 	Model string
-	Tab   string
+	Tab   Tab
 }
 
 // APIError defines a model
