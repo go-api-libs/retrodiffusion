@@ -596,8 +596,7 @@
             "type": "number"
           },
           "credit_cost": {
-            "type": "number",
-            "nullable": true
+            "type": "number"
           },
           "charged": {
             "type": "boolean"
@@ -713,8 +712,7 @@
             "description": "15-minute signed URLs when upload_outputs=true",
             "type": "array",
             "items": {
-              "type": "string",
-              "example": null
+              "type": "string"
             }
           },
           "model": {
@@ -743,8 +741,7 @@
           "output_images": {
             "type": "array",
             "items": {
-              "type": "object",
-              "example": null
+              "type": "object"
             }
           },
           "remaining_credits": {
@@ -906,7 +903,10 @@
         }
       },
       "Model": {
-        "type": "string",
+        "type": [
+          "string",
+          "null"
+        ],
         "enum": [
           "rd_fast",
           "rd_plus",
@@ -1111,14 +1111,20 @@
             "example": 1
           },
           "require_input_image": {
-            "type": "boolean",
+            "type": [
+              "boolean",
+              "null"
+            ],
             "example": null
           },
           "supports_reference_images": {
             "type": "boolean"
           },
           "example_prompt": {
-            "type": "string",
+            "type": [
+              "string",
+              "null"
+            ],
             "example": "An orange cat playing with a blue ball of yarn"
           },
           "group_id": {

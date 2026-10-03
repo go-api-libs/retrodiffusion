@@ -27,7 +27,7 @@ var jsonOpts = json.JoinOptions(
 
 // ListAvailableStylesParams holds the query parameters for ListAvailableStyles.
 type ListAvailableStylesParams struct {
-	Model string
+	Model Model
 	Tab   Tab
 }
 
@@ -41,77 +41,77 @@ type APIErrorDetail []ErrorWithLocation
 
 // AsyncAccepted defines a model
 type AsyncAccepted struct {
-	Status    string    `json:"status,omitzero"`
-	TaskID    uuid.UUID `json:"task_id,omitzero"`
-	RequestID uuid.UUID `json:"request_id,omitzero"`
-	Message   string    `json:"message,omitzero"`
+	Status    string    `json:"status"`
+	TaskID    uuid.UUID `json:"task_id"`
+	RequestID uuid.UUID `json:"request_id"`
+	Message   string    `json:"message"`
 }
 
 // CreateStyleRequest defines a model
 type CreateStyleRequest struct {
-	Name             string   `json:"name,omitzero"`
+	Name             string   `json:"name"`
 	Description      string   `json:"description,omitzero"`
 	StyleIcon        string   `json:"style_icon,omitzero"`
 	ReferenceImages  []string `json:"reference_images,omitzero"`
 	ReferenceCaption string   `json:"reference_caption,omitzero"`
-	ApplyPromptFixer bool     `json:"apply_prompt_fixer,omitempty"`
+	ApplyPromptFixer *bool    `json:"apply_prompt_fixer,omitzero"`
 	LlmInstructions  string   `json:"llm_instructions,omitzero"`
 	// Must contain the token {prompt}
 	UserPromptTemplate string `json:"user_prompt_template,omitzero"`
-	ForcePalette       bool   `json:"force_palette,omitempty"`
-	ForceBgRemoval     bool   `json:"force_bg_removal,omitempty"`
-	MinWidth           *int   `json:"min_width,omitempty"`
-	MinHeight          *int   `json:"min_height,omitempty"`
+	ForcePalette       *bool  `json:"force_palette,omitzero"`
+	ForceBgRemoval     *bool  `json:"force_bg_removal,omitzero"`
+	MinWidth           int    `json:"min_width,omitzero"`
+	MinHeight          int    `json:"min_height,omitzero"`
 }
 
 // CreditsResponse defines a model
 type CreditsResponse struct {
-	Credits *float64 `json:"credits,omitempty"`
-	Balance *float64 `json:"balance,omitempty"`
+	Credits *float64 `json:"credits,omitzero"`
+	Balance *float64 `json:"balance,omitzero"`
 }
 
 // DeleteUserStyleOkJSONResponse defines a model
 type DeleteUserStyleOkJSONResponse struct {
-	Deleted bool `json:"deleted,omitempty"`
+	Deleted *bool `json:"deleted,omitzero"`
 }
 
 // EditToolEstimate defines a model
 type EditToolEstimate struct {
 	ToolID          ToolID   `json:"tool_id,omitzero"`
-	BalanceCost     *float64 `json:"balance_cost,omitempty"`
-	CreditCost      *float64 `json:"credit_cost,omitempty"`
-	EstimateSeconds *float64 `json:"estimate_seconds,omitempty"`
+	BalanceCost     *float64 `json:"balance_cost,omitzero"`
+	CreditCost      *float64 `json:"credit_cost,omitzero"`
+	EstimateSeconds *float64 `json:"estimate_seconds,omitzero"`
 }
 
 // EditToolRequest defines a model
 type EditToolRequest struct {
 	// Raw base64 or data:image/...;base64 data URI
-	InputImage string `json:"input_image,omitzero"`
+	InputImage string `json:"input_image"`
 	// For correlating runs with your queue (not idempotency key)
 	CustomID string `json:"custom_id,omitzero"`
 	Prompt   string `json:"prompt,omitzero"`
-	Seed     *int   `json:"seed,omitempty"`
+	Seed     *int   `json:"seed,omitzero"`
 	// For inpainting. RGBA PNG preferred: alpha 0 protects, alpha >12 selects. Grayscale also accepted.
 	MaskImage             string                    `json:"mask_image,omitzero"`
-	SoftInpaint           bool                      `json:"soft_inpaint,omitempty"`
-	ExpandLeft            *int                      `json:"expand_left,omitempty"`
-	ExpandRight           *int                      `json:"expand_right,omitempty"`
-	ExpandTop             *int                      `json:"expand_top,omitempty"`
-	ExpandBottom          *int                      `json:"expand_bottom,omitempty"`
-	TileX                 bool                      `json:"tile_x,omitempty"`
-	TileY                 bool                      `json:"tile_y,omitempty"`
-	SeamWidth             *int                      `json:"seam_width,omitempty"`
-	RepairWindowSize      *int                      `json:"repair_window_size,omitempty"`
-	TransparencyThreshold *float64                  `json:"transparency_threshold,omitempty"`
-	ForceSolidPixels      bool                      `json:"force_solid_pixels,omitempty"`
+	SoftInpaint           *bool                     `json:"soft_inpaint,omitzero"`
+	ExpandLeft            *int                      `json:"expand_left,omitzero"`
+	ExpandRight           *int                      `json:"expand_right,omitzero"`
+	ExpandTop             *int                      `json:"expand_top,omitzero"`
+	ExpandBottom          *int                      `json:"expand_bottom,omitzero"`
+	TileX                 *bool                     `json:"tile_x,omitzero"`
+	TileY                 *bool                     `json:"tile_y,omitzero"`
+	SeamWidth             *int                      `json:"seam_width,omitzero"`
+	RepairWindowSize      *int                      `json:"repair_window_size,omitzero"`
+	TransparencyThreshold *float64                  `json:"transparency_threshold,omitzero"`
+	ForceSolidPixels      *bool                     `json:"force_solid_pixels,omitzero"`
 	ExtraInputImage       string                    `json:"extra_input_image,omitzero"`
-	ColorCount            *int                      `json:"color_count,omitempty"`
+	ColorCount            *int                      `json:"color_count,omitzero"`
 	DitherMode            EditToolRequestDitherMode `json:"dither_mode,omitzero"`
-	DitherStrength        *int                      `json:"dither_strength,omitempty"`
+	DitherStrength        *int                      `json:"dither_strength,omitzero"`
 	InputPalette          string                    `json:"input_palette,omitzero"`
-	Width                 *int                      `json:"width,omitempty"`
-	Height                *int                      `json:"height,omitempty"`
-	RotationDegrees       *int                      `json:"rotation_degrees,omitempty"`
+	Width                 *int                      `json:"width,omitzero"`
+	Height                *int                      `json:"height,omitzero"`
+	RotationDegrees       *int                      `json:"rotation_degrees,omitzero"`
 }
 
 // EditToolRequestDitherMode defines a model
@@ -140,10 +140,10 @@ type EditToolResponse struct {
 	InferenceID      string   `json:"inference_id,omitzero"`
 	Base64Images     []string `json:"base64_images,omitzero"`
 	OutputUrls       []string `json:"output_urls,omitzero"`
-	BalanceCost      *float64 `json:"balance_cost,omitempty"`
-	CreditCost       *float64 `json:"credit_cost,omitempty"`
-	Charged          bool     `json:"charged,omitempty"`
-	RemainingBalance *float64 `json:"remaining_balance,omitempty"`
+	BalanceCost      *float64 `json:"balance_cost,omitzero"`
+	CreditCost       *float64 `json:"credit_cost,omitzero"`
+	Charged          *bool    `json:"charged,omitzero"`
+	RemainingBalance *float64 `json:"remaining_balance,omitzero"`
 }
 
 // Error defines a model
@@ -161,16 +161,16 @@ type ErrorDetails []ErrorDetail
 
 // ErrorWithCode defines a model
 type ErrorWithCode struct {
-	Code      string    `json:"code,omitzero"`
-	Message   string    `json:"message,omitzero"`
-	RequestID uuid.UUID `json:"request_id,omitzero"`
+	Code      string    `json:"code"`
+	Message   string    `json:"message"`
+	RequestID uuid.UUID `json:"request_id"`
 }
 
 // ErrorWithLocation defines a model
 type ErrorWithLocation struct {
 	Loc  []string `json:"loc"`
-	Msg  string   `json:"msg,omitzero"`
-	Type string   `json:"type,omitzero"`
+	Msg  string   `json:"msg"`
+	Type string   `json:"type"`
 }
 
 // Errors defines a model
@@ -186,55 +186,55 @@ type Inference struct {
 	Base64Images []string `json:"base64_images"`
 	// 15-minute signed URLs when upload_outputs=true
 	OutputUrls           []string   `json:"output_urls,omitzero"`
-	Model                string     `json:"model,omitzero"`
+	Model                string     `json:"model"`
 	RemainingBalance     float64    `json:"remaining_balance"`
-	RequestID            uuid.UUID  `json:"request_id,omitzero"`
+	RequestID            uuid.UUID  `json:"request_id"`
 	OutputsRetainedUntil time.Time  `json:"outputs_retained_until"`
-	CreditCost           *int       `json:"credit_cost,omitempty"`
+	CreditCost           *int       `json:"credit_cost,omitzero"`
 	OutputImages         []struct{} `json:"output_images,omitzero"`
-	RemainingCredits     *int       `json:"remaining_credits,omitempty"`
+	RemainingCredits     *int       `json:"remaining_credits,omitzero"`
 }
 
 // InferenceRequest defines a model
 type InferenceRequest struct {
 	// Describe the SUBJECT only. Never write 'pixel art'.
-	Prompt string `json:"prompt,omitzero"`
+	Prompt string `json:"prompt"`
 	// Style id e.g. rd_fast__default, rd_pro__default, rd_plus__default, animation/tile variants, or user__name_id
-	PromptStyle PromptStyle `json:"prompt_style,omitzero"`
+	PromptStyle PromptStyle `json:"prompt_style"`
 	// Style-enforced tighter limits apply (most top out at 384)
 	Width     int `json:"width"`
 	Height    int `json:"height"`
 	NumImages int `json:"num_images"`
 	// Reproducible generation
-	Seed *int `json:"seed,omitempty"`
+	Seed *int `json:"seed,omitzero"`
 	// Raw base64 PNG (no data: URI prefix), RGB no transparency. Required for img2img, advanced animation, some edit tools.
 	InputImage string `json:"input_image,omitzero"`
 	// How much to change input_image
-	Strength *float64 `json:"strength,omitempty"`
+	Strength *float64 `json:"strength,omitzero"`
 	// Base64 images. RD Pro styles only. Guides style/content.
 	ReferenceImages []string `json:"reference_images,omitzero"`
 	// Base64 palette constraining output colors
 	InputPalette string `json:"input_palette,omitzero"`
 	// Transparent output
-	RemoveBg bool `json:"remove_bg,omitempty"`
-	TileX    bool `json:"tile_x,omitempty"`
-	TileY    bool `json:"tile_y,omitempty"`
+	RemoveBg *bool `json:"remove_bg,omitzero"`
+	TileX    *bool `json:"tile_x,omitzero"`
+	TileY    *bool `json:"tile_y,omitzero"`
 	// Animation styles only
-	FramesDuration *int `json:"frames_duration,omitempty"`
+	FramesDuration int `json:"frames_duration,omitzero"`
 	// Animations: PNG spritesheet instead of GIF
-	ReturnSpritesheet bool `json:"return_spritesheet,omitempty"`
+	ReturnSpritesheet *bool `json:"return_spritesheet,omitzero"`
 	// 1 = native pixel size
-	UpscaleOutputFactor *int `json:"upscale_output_factor,omitempty"`
+	UpscaleOutputFactor *int `json:"upscale_output_factor,omitzero"`
 	// Skip automatic LLM prompt enrichment
-	BypassPromptExpansion bool `json:"bypass_prompt_expansion,omitempty"`
+	BypassPromptExpansion *bool `json:"bypass_prompt_expansion,omitzero"`
 	// Extra structured assets e.g. item atlas JSON
-	IncludeDownloadableData bool `json:"include_downloadable_data,omitempty"`
+	IncludeDownloadableData *bool `json:"include_downloadable_data,omitzero"`
 	// FREE dry run: returns price, generates nothing, charges nothing
-	CheckCost bool `json:"check_cost,omitempty"`
+	CheckCost *bool `json:"check_cost,omitzero"`
 	// Return task_id for polling instead of waiting
-	Async bool `json:"async,omitempty"`
+	Async *bool `json:"async,omitzero"`
 	// Receive temporary signed URLs in output_urls instead of (or with) base64
-	UploadOutputs bool `json:"upload_outputs,omitempty"`
+	UploadOutputs *bool `json:"upload_outputs,omitzero"`
 	// For advanced tileset styles
 	ExtraPrompt string `json:"extra_prompt,omitzero"`
 	// For advanced tileset styles
@@ -277,11 +277,11 @@ type PixelFixerRequest struct {
 	// Raw base64 PNG/JPEG/WebP or data URI
 	InputImage string `json:"input_image,omitzero"`
 	// Public HTTPS PNG/JPEG/WebP
-	ImageURL *url.URL `json:"image_url,omitempty"`
+	ImageURL url.URL `json:"image_url,omitzero"`
 	// Neural only: target output width
-	Width *int `json:"width,omitempty"`
+	Width *int `json:"width,omitzero"`
 	// Neural only: target output height
-	Height *int `json:"height,omitempty"`
+	Height *int `json:"height,omitzero"`
 }
 
 // PixelFixerResponse defines a model
@@ -399,8 +399,8 @@ func (e PromptStyle) Valid() bool {
 
 // StatusResponse defines a model
 type StatusResponse struct {
-	Status    *map[string]string `json:"status,omitempty"`
-	UpdatedAt *int               `json:"updated_at,omitempty"`
+	Status    map[string]string `json:"status,omitzero"`
+	UpdatedAt *int              `json:"updated_at,omitzero"`
 }
 
 // Style defines a model
@@ -411,13 +411,13 @@ type Style struct {
 	Description             string      `json:"description,omitzero"`
 	RequiredModel           Model       `json:"required_model,omitzero"`
 	RequiredTab             Tab         `json:"required_tab,omitzero"`
-	MinWidth                *int        `json:"min_width,omitempty"`
-	MaxWidth                *int        `json:"max_width,omitempty"`
-	MinHeight               *int        `json:"min_height,omitempty"`
-	MaxHeight               *int        `json:"max_height,omitempty"`
-	MaxNumberOfImages       *int        `json:"max_number_of_images,omitempty"`
-	RequireInputImage       bool        `json:"require_input_image,omitempty"`
-	SupportsReferenceImages bool        `json:"supports_reference_images,omitempty"`
+	MinWidth                *int        `json:"min_width,omitzero"`
+	MaxWidth                *int        `json:"max_width,omitzero"`
+	MinHeight               *int        `json:"min_height,omitzero"`
+	MaxHeight               *int        `json:"max_height,omitzero"`
+	MaxNumberOfImages       *int        `json:"max_number_of_images,omitzero"`
+	RequireInputImage       *bool       `json:"require_input_image,omitzero"`
+	SupportsReferenceImages *bool       `json:"supports_reference_images,omitzero"`
 	ExamplePrompt           string      `json:"example_prompt,omitzero"`
 	GroupID                 string      `json:"group_id,omitzero"`
 }
@@ -457,15 +457,15 @@ type Tabs []Tab
 
 // TaskStatus defines a model
 type TaskStatus struct {
-	Status TaskStatusStatus `json:"status,omitzero"`
-	TaskID uuid.UUID        `json:"task_id,omitzero"`
-	Result *Inference       `json:"result,omitempty"`
-	Err    *TaskStatusError `json:"error,omitempty"`
+	Status TaskStatusStatus `json:"status"`
+	TaskID uuid.UUID        `json:"task_id"`
+	Result Inference        `json:"result,omitzero"`
+	Err    *TaskStatusError `json:"error,omitzero"`
 }
 
 // TaskStatusError defines a model
 type TaskStatusError struct {
-	StatusCode *int   `json:"status_code,omitempty"`
+	StatusCode *int   `json:"status_code,omitzero"`
 	Detail     string `json:"detail,omitzero"`
 }
 

@@ -332,8 +332,13 @@ func (c *Client) GetInferenceJobWithResult[R any](ctx context.Context, taskID uu
 // Returns status, settings, billing, and freshly signed output URLs. Any active personal key from owning account may retrieve after key rotation.
 //
 //	GET /inferences/requests/{request_id}
-func (c *Client) GetInferenceRequest(ctx context.Context, requestID uuid.UUID) (*InferenceRequestResult, error) {
-	return c.GetInferenceRequestWithResult[InferenceRequestResult](ctx, requestID)
+func (c *Client) GetInferenceRequest(ctx context.Context, requestID uuid.UUID) (InferenceRequestResult, error) {
+	out, err := c.GetInferenceRequestWithResult[InferenceRequestResult](ctx, requestID)
+	if err != nil {
+		return nil, err
+	}
+
+	return *out, nil
 }
 
 // Returns status, settings, billing, and freshly signed output URLs. Any active personal key from owning account may retrieve after key rotation.
@@ -500,7 +505,7 @@ func (c *Client) ListAvailableStylesWithResult[R any](ctx context.Context, param
 		q := make(url.Values, 2)
 
 		if params.Model != "" {
-			q["model"] = []string{params.Model}
+			q["model"] = []string{string(params.Model)}
 		}
 
 		if params.Tab != "" {
