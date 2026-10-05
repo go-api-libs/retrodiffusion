@@ -151,7 +151,14 @@ func (c *Client) CreateInferenceWithResult[R any](ctx context.Context, body Infe
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*Inference); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
 				if !c.debug {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -175,7 +182,14 @@ func (c *Client) CreateInferenceWithResult[R any](ctx context.Context, body Infe
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*Inference); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
 				if !c.debug {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -332,7 +346,14 @@ func (c *Client) GetInferenceJobWithResult[R any](ctx context.Context, taskID uu
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*TaskStatus); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
 				if !c.debug {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -419,7 +440,14 @@ func (c *Client) GetInferenceRequestWithResult[R any](ctx context.Context, reque
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*InferenceRequestResult); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
 				if !c.debug {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -501,7 +529,14 @@ func (c *Client) GetBalanceWithResult[R any](ctx context.Context) (*R, error) {
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*CreditsResponse); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
 				if !c.debug {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -597,7 +632,14 @@ func (c *Client) ListAvailableStylesWithResult[R any](ctx context.Context, param
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*StyleDescriptors); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
 				if !c.debug {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -707,7 +749,14 @@ func (c *Client) CreateUserStyleWithResult[R any](ctx context.Context, body Crea
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*Style); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
 				if !c.debug {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -786,7 +835,14 @@ func (c *Client) DeleteUserStyleWithResult[R any](ctx context.Context, styleID P
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*DeleteUserStyleOkJSONResponse); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
 				if !c.debug {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -872,7 +928,14 @@ func (c *Client) UpdateUserStyleWithResult[R any](ctx context.Context, styleID P
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*Style); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
 				if !c.debug {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -956,7 +1019,14 @@ func (c *Client) ListEditToolsWithResult[R any](ctx context.Context) (*R, error)
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*ListEditToolsOkJSONResponse); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
 				if !c.debug {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1042,7 +1112,14 @@ func (c *Client) RunEditToolWithResult[R any](ctx context.Context, toolID ToolID
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*EditToolResponse); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
 				if !c.debug {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1137,7 +1214,14 @@ func (c *Client) EstimateEditToolCostWithResult[R any](ctx context.Context, tool
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*EditToolEstimate); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
 				if !c.debug {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1223,7 +1307,14 @@ func (c *Client) FixPixelArtStandardWithResult[R any](ctx context.Context, body 
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*PixelFixerResponse); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
 				if !c.debug {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1318,7 +1409,14 @@ func (c *Client) FixPixelArtNeuralWithResult[R any](ctx context.Context, body Pi
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*PixelFixerResponse); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
 				if !c.debug {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1406,7 +1504,14 @@ func (c *Client) GetServiceStatusWithResult[R any](ctx context.Context) (*R, err
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*StatusResponse); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
 				if !c.debug {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
