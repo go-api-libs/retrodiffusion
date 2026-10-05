@@ -50,7 +50,13 @@
           "500": {
             "$ref": "#/components/responses/InternalServerError"
           }
-        }
+        },
+        "security": [
+          {},
+          {
+            "XRdToken": []
+          }
+        ]
       }
     },
     "/inferences/tasks/{task_id}": {
@@ -139,7 +145,13 @@
           "401": {
             "$ref": "#/components/responses/Unauthorized"
           }
-        }
+        },
+        "security": [
+          {},
+          {
+            "XRdToken": []
+          }
+        ]
       }
     },
     "/styles": {
