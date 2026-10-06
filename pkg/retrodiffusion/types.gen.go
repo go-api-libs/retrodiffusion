@@ -192,8 +192,8 @@ type Inference struct {
 	OutputUrls           []string   `json:"output_urls,omitzero"`
 	Model                string     `json:"model"`
 	RemainingBalance     float64    `json:"remaining_balance"`
-	RequestID            uuid.UUID  `json:"request_id"`
-	OutputsRetainedUntil time.Time  `json:"outputs_retained_until"`
+	RequestID            uuid.UUID  `json:"request_id,omitzero"`
+	OutputsRetainedUntil time.Time  `json:"outputs_retained_until,omitzero"`
 	CreditCost           *int       `json:"credit_cost,omitzero"`
 	OutputImages         []struct{} `json:"output_images,omitzero"`
 	RemainingCredits     *int       `json:"remaining_credits,omitzero"`

@@ -766,9 +766,7 @@
           "balance_cost",
           "base64_images",
           "model",
-          "remaining_balance",
-          "request_id",
-          "outputs_retained_until"
+          "remaining_balance"
         ]
       },
       "InferenceRequest": {
