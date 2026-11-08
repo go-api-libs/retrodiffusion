@@ -143,7 +143,7 @@ type EditToolResponse struct {
 	ToolID           ToolID   `json:"tool_id,omitzero"`
 	InferenceID      string   `json:"inference_id,omitzero"`
 	Base64Images     []string `json:"base64_images,omitzero"`
-	OutputUrls       []string `json:"output_urls,omitzero"`
+	OutputURLs       []string `json:"output_urls,omitzero"`
 	BalanceCost      *float64 `json:"balance_cost,omitzero"`
 	CreditCost       *float64 `json:"credit_cost,omitzero"`
 	Charged          *bool    `json:"charged,omitzero"`
@@ -189,7 +189,7 @@ type Inference struct {
 	// Raw base64 PNG (or GIF for animations)
 	Base64Images []string `json:"base64_images"`
 	// 15-minute signed URLs when upload_outputs=true
-	OutputUrls           []string   `json:"output_urls,omitzero"`
+	OutputURLs           []string   `json:"output_urls,omitzero"`
 	Model                string     `json:"model"`
 	RemainingBalance     float64    `json:"remaining_balance"`
 	RequestID            uuid.UUID  `json:"request_id,omitzero"`
