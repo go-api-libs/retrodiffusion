@@ -777,25 +777,28 @@ func (c *Client) UpdateUserStyle(ctx context.Context, styleID PromptStyle, body 
 //	PATCH /styles/{style_id}
 func (c *Client) UpdateUserStyleWithResult[R any](ctx context.Context, styleID PromptStyle, body *CreateStyleRequest) (*R, error) {
 	u := c.baseURL.JoinPath("styles", string(styleID))
-	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
-			"X-Rd-Token":   []string{c.apiKey},
-			"User-Agent":   []string{c.userAgent},
-			"Content-Type": []string{"application/json"},
+			"X-Rd-Token": []string{c.apiKey},
+			"User-Agent": []string{c.userAgent},
 		},
-		Host:          u.Host,
-		Method:        http.MethodPatch,
-		Proto:         "HTTP/1.1",
-		ProtoMajor:    1,
-		ProtoMinor:    1,
-		URL:           u,
-		Body:          pr,
-		ContentLength: -1,
+		Host:       u.Host,
+		Method:     http.MethodPatch,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		URL:        u,
 	}).WithContext(ctx)
 
-	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
-	defer pr.Close()
+	// an optional body left out is sent as no body at all, not as JSON null
+	if body != nil {
+		pr, pw := io.Pipe()
+		req.Body, req.ContentLength = pr, -1
+		req.Header["Content-Type"] = []string{"application/json"}
+
+		go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
+		defer pr.Close()
+	}
 
 	rsp, ia, err := c.do(req)
 	if err != nil {
