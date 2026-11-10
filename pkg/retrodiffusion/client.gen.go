@@ -110,14 +110,6 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 //
 //	POST /inferences
 func (c *Client) CreateInference(ctx context.Context, body InferenceRequest) (*Inference, error) {
-	return c.CreateInferenceWithResult[Inference](ctx, body)
-}
-
-// Main generation endpoint. Set check_cost=true for free price estimate. Set async=true for long-running jobs (animations/batches). Use upload_outputs=true for signed URLs.
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /inferences
-func (c *Client) CreateInferenceWithResult[R any](ctx context.Context, body InferenceRequest) (*R, error) {
 	u := c.baseURL.JoinPath("inferences")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
@@ -150,15 +142,8 @@ func (c *Client) CreateInferenceWithResult[R any](ctx context.Context, body Infe
 		// Sync success or check_cost result
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*Inference); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out Inference
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -167,7 +152,7 @@ func (c *Client) CreateInferenceWithResult[R any](ctx context.Context, body Infe
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(Inference)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -181,15 +166,8 @@ func (c *Client) CreateInferenceWithResult[R any](ctx context.Context, body Infe
 		// Async accepted
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*Inference); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out Inference
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -198,7 +176,7 @@ func (c *Client) CreateInferenceWithResult[R any](ctx context.Context, body Infe
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(Inference)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -295,14 +273,6 @@ func (c *Client) CreateInferenceWithResult[R any](ctx context.Context, body Infe
 //
 //	GET /inferences/tasks/{task_id}
 func (c *Client) GetInferenceJob(ctx context.Context, taskID uuid.UUID) (*TaskStatus, error) {
-	return c.GetInferenceJobWithResult[TaskStatus](ctx, taskID)
-}
-
-// Poll async inference job
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /inferences/tasks/{task_id}
-func (c *Client) GetInferenceJobWithResult[R any](ctx context.Context, taskID uuid.UUID) (*R, error) {
 	u := c.baseURL.JoinPath("inferences", "tasks", taskID.String())
 	req := (&http.Request{
 		Header: http.Header{
@@ -328,15 +298,8 @@ func (c *Client) GetInferenceJobWithResult[R any](ctx context.Context, taskID uu
 		// Task status
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*TaskStatus); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out TaskStatus
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -345,7 +308,7 @@ func (c *Client) GetInferenceJobWithResult[R any](ctx context.Context, taskID uu
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(TaskStatus)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -367,19 +330,6 @@ func (c *Client) GetInferenceJobWithResult[R any](ctx context.Context, taskID uu
 //
 //	GET /inferences/requests/{request_id}
 func (c *Client) GetInferenceRequest(ctx context.Context, requestID uuid.UUID) (InferenceRequestResult, error) {
-	out, err := c.GetInferenceRequestWithResult[InferenceRequestResult](ctx, requestID)
-	if err != nil {
-		return nil, err
-	}
-
-	return *out, nil
-}
-
-// Returns status, settings, billing, and freshly signed output URLs. Any active personal key from owning account may retrieve after key rotation.
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /inferences/requests/{request_id}
-func (c *Client) GetInferenceRequestWithResult[R any](ctx context.Context, requestID uuid.UUID) (*R, error) {
 	u := c.baseURL.JoinPath("inferences", "requests", requestID.String())
 	req := (&http.Request{
 		Header: http.Header{
@@ -405,15 +355,8 @@ func (c *Client) GetInferenceRequestWithResult[R any](ctx context.Context, reque
 		// Request details + signed URLs
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*InferenceRequestResult); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out InferenceRequestResult
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -422,13 +365,13 @@ func (c *Client) GetInferenceRequestWithResult[R any](ctx context.Context, reque
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(InferenceRequestResult)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
 			}
 
-			return &out, nil
+			return out, nil
 		default:
 			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
 		}
@@ -444,14 +387,6 @@ func (c *Client) GetInferenceRequestWithResult[R any](ctx context.Context, reque
 //
 //	GET /inferences/credits
 func (c *Client) GetBalance(ctx context.Context) (*CreditsResponse, error) {
-	return c.GetBalanceWithResult[CreditsResponse](ctx)
-}
-
-// Get balance and credits
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /inferences/credits
-func (c *Client) GetBalanceWithResult[R any](ctx context.Context) (*R, error) {
 	u := c.baseURL.JoinPath("inferences", "credits")
 	req := (&http.Request{
 		Header: http.Header{
@@ -477,15 +412,8 @@ func (c *Client) GetBalanceWithResult[R any](ctx context.Context) (*R, error) {
 		// Current balance
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*CreditsResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out CreditsResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -494,7 +422,7 @@ func (c *Client) GetBalanceWithResult[R any](ctx context.Context) (*R, error) {
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(CreditsResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -516,14 +444,6 @@ func (c *Client) GetBalanceWithResult[R any](ctx context.Context) (*R, error) {
 //
 //	GET /styles/selector
 func (c *Client) ListAvailableStyles(ctx context.Context, params *ListAvailableStylesParams) (*StyleDescriptors, error) {
-	return c.ListAvailableStylesWithResult[StyleDescriptors](ctx, params)
-}
-
-// Live style catalog with limits
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /styles/selector
-func (c *Client) ListAvailableStylesWithResult[R any](ctx context.Context, params *ListAvailableStylesParams) (*R, error) {
 	u := c.baseURL.JoinPath("styles", "selector")
 	if params != nil {
 		q := make(url.Values, 2)
@@ -563,15 +483,8 @@ func (c *Client) ListAvailableStylesWithResult[R any](ctx context.Context, param
 		// Array of style descriptors
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*StyleDescriptors); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out StyleDescriptors
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -580,7 +493,7 @@ func (c *Client) ListAvailableStylesWithResult[R any](ctx context.Context, param
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(StyleDescriptors)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -623,14 +536,6 @@ func (c *Client) ListAvailableStylesWithResult[R any](ctx context.Context, param
 //
 //	POST /styles
 func (c *Client) CreateUserStyle(ctx context.Context, body CreateStyleRequest) (*Style, error) {
-	return c.CreateUserStyleWithResult[Style](ctx, body)
-}
-
-// Create custom user style (RD Pro reference template)
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /styles
-func (c *Client) CreateUserStyleWithResult[R any](ctx context.Context, body CreateStyleRequest) (*R, error) {
 	u := c.baseURL.JoinPath("styles")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
@@ -663,15 +568,8 @@ func (c *Client) CreateUserStyleWithResult[R any](ctx context.Context, body Crea
 		// Style created
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*Style); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out Style
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -680,7 +578,7 @@ func (c *Client) CreateUserStyleWithResult[R any](ctx context.Context, body Crea
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(Style)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -699,14 +597,6 @@ func (c *Client) CreateUserStyleWithResult[R any](ctx context.Context, body Crea
 //
 //	DELETE /styles/{style_id}
 func (c *Client) DeleteUserStyle(ctx context.Context, styleID PromptStyle) (*DeleteUserStyleOkJSONResponse, error) {
-	return c.DeleteUserStyleWithResult[DeleteUserStyleOkJSONResponse](ctx, styleID)
-}
-
-// Delete user style
-// You can define a custom result to unmarshal the response into.
-//
-//	DELETE /styles/{style_id}
-func (c *Client) DeleteUserStyleWithResult[R any](ctx context.Context, styleID PromptStyle) (*R, error) {
 	u := c.baseURL.JoinPath("styles", url.PathEscape(string(styleID)))
 	req := (&http.Request{
 		Header: http.Header{
@@ -732,15 +622,8 @@ func (c *Client) DeleteUserStyleWithResult[R any](ctx context.Context, styleID P
 		// Deleted
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*DeleteUserStyleOkJSONResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out DeleteUserStyleOkJSONResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -749,7 +632,7 @@ func (c *Client) DeleteUserStyleWithResult[R any](ctx context.Context, styleID P
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(DeleteUserStyleOkJSONResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -768,14 +651,6 @@ func (c *Client) DeleteUserStyleWithResult[R any](ctx context.Context, styleID P
 //
 //	PATCH /styles/{style_id}
 func (c *Client) UpdateUserStyle(ctx context.Context, styleID PromptStyle, body *CreateStyleRequest) (*Style, error) {
-	return c.UpdateUserStyleWithResult[Style](ctx, styleID, body)
-}
-
-// Update user style
-// You can define a custom result to unmarshal the response into.
-//
-//	PATCH /styles/{style_id}
-func (c *Client) UpdateUserStyleWithResult[R any](ctx context.Context, styleID PromptStyle, body *CreateStyleRequest) (*R, error) {
 	u := c.baseURL.JoinPath("styles", url.PathEscape(string(styleID)))
 	req := (&http.Request{
 		Header: http.Header{
@@ -811,15 +686,8 @@ func (c *Client) UpdateUserStyleWithResult[R any](ctx context.Context, styleID P
 		// Updated
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*Style); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out Style
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -828,7 +696,7 @@ func (c *Client) UpdateUserStyleWithResult[R any](ctx context.Context, styleID P
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(Style)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -847,19 +715,6 @@ func (c *Client) UpdateUserStyleWithResult[R any](ctx context.Context, styleID P
 //
 //	GET /edit/tools
 func (c *Client) ListEditTools(ctx context.Context) (ListEditToolsOkJSONResponse, error) {
-	out, err := c.ListEditToolsWithResult[ListEditToolsOkJSONResponse](ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return *out, nil
-}
-
-// List enabled canvas edit tools
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /edit/tools
-func (c *Client) ListEditToolsWithResult[R any](ctx context.Context) (*R, error) {
 	u := c.baseURL.JoinPath("edit", "tools")
 	req := (&http.Request{
 		Header: http.Header{
@@ -885,15 +740,8 @@ func (c *Client) ListEditToolsWithResult[R any](ctx context.Context) (*R, error)
 		// Tool list with costs, limits, api_fields
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*ListEditToolsOkJSONResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out ListEditToolsOkJSONResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -902,13 +750,13 @@ func (c *Client) ListEditToolsWithResult[R any](ctx context.Context) (*R, error)
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(ListEditToolsOkJSONResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
 			}
 
-			return &out, nil
+			return out, nil
 		default:
 			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
 		}
@@ -921,14 +769,6 @@ func (c *Client) ListEditToolsWithResult[R any](ctx context.Context) (*R, error)
 //
 //	POST /edit/tools/{tool_id}
 func (c *Client) RunEditTool(ctx context.Context, toolID ToolID, body EditToolRequest) (*EditToolResponse, error) {
-	return c.RunEditToolWithResult[EditToolResponse](ctx, toolID, body)
-}
-
-// Tools: image_edit, inpainting, outpainting, seam_tiling, background_remover, color_style_transfer, color_reducer, palette_converter, k_centroid_downscale, pixel_correction, rotate. Free tools may require min balance $0.01.
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /edit/tools/{tool_id}
-func (c *Client) RunEditToolWithResult[R any](ctx context.Context, toolID ToolID, body EditToolRequest) (*R, error) {
 	u := c.baseURL.JoinPath("edit", "tools", url.PathEscape(string(toolID)))
 	pr, pw := io.Pipe()
 	req := (&http.Request{
@@ -961,15 +801,8 @@ func (c *Client) RunEditToolWithResult[R any](ctx context.Context, toolID ToolID
 		// Tool result
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*EditToolResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out EditToolResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -978,7 +811,7 @@ func (c *Client) RunEditToolWithResult[R any](ctx context.Context, toolID ToolID
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(EditToolResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1006,14 +839,6 @@ func (c *Client) RunEditToolWithResult[R any](ctx context.Context, toolID ToolID
 //
 //	POST /edit/tools/{tool_id}/estimate
 func (c *Client) EstimateEditToolCost(ctx context.Context, toolID ToolID, body EditToolRequest) (*EditToolEstimate, error) {
-	return c.EstimateEditToolCostWithResult[EditToolEstimate](ctx, toolID, body)
-}
-
-// Estimate edit tool cost (no run)
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /edit/tools/{tool_id}/estimate
-func (c *Client) EstimateEditToolCostWithResult[R any](ctx context.Context, toolID ToolID, body EditToolRequest) (*R, error) {
 	u := c.baseURL.JoinPath("edit", "tools", url.PathEscape(string(toolID)), "estimate")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
@@ -1046,15 +871,8 @@ func (c *Client) EstimateEditToolCostWithResult[R any](ctx context.Context, tool
 		// Cost estimate
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*EditToolEstimate); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out EditToolEstimate
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1063,7 +881,7 @@ func (c *Client) EstimateEditToolCostWithResult[R any](ctx context.Context, tool
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(EditToolEstimate)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1082,14 +900,6 @@ func (c *Client) EstimateEditToolCostWithResult[R any](ctx context.Context, tool
 //
 //	POST /pixel-fixer/standard
 func (c *Client) FixPixelArtStandard(ctx context.Context, body PixelFixerRequest) (*PixelFixerResponse, error) {
-	return c.FixPixelArtStandardWithResult[PixelFixerResponse](ctx, body)
-}
-
-// Native Rust grid detection. 16x16 to 16 megapixels. Rate limits: 120/min with purchase history, else 10/min. Shared with neural.
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /pixel-fixer/standard
-func (c *Client) FixPixelArtStandardWithResult[R any](ctx context.Context, body PixelFixerRequest) (*R, error) {
 	u := c.baseURL.JoinPath("pixel-fixer", "standard")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
@@ -1122,15 +932,8 @@ func (c *Client) FixPixelArtStandardWithResult[R any](ctx context.Context, body 
 		// Fixed image
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*PixelFixerResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out PixelFixerResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1139,7 +942,7 @@ func (c *Client) FixPixelArtStandardWithResult[R any](ctx context.Context, body 
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(PixelFixerResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1167,14 +970,6 @@ func (c *Client) FixPixelArtStandardWithResult[R any](ctx context.Context, body 
 //
 //	POST /pixel-fixer/neural
 func (c *Client) FixPixelArtNeural(ctx context.Context, body PixelFixerRequest) (*PixelFixerResponse, error) {
-	return c.FixPixelArtNeuralWithResult[PixelFixerResponse](ctx, body)
-}
-
-// Accepts larger sources, bilinear-downscales above 1MP budget. Optional width/height target (capped 16MP).
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /pixel-fixer/neural
-func (c *Client) FixPixelArtNeuralWithResult[R any](ctx context.Context, body PixelFixerRequest) (*R, error) {
 	u := c.baseURL.JoinPath("pixel-fixer", "neural")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
@@ -1207,15 +1002,8 @@ func (c *Client) FixPixelArtNeuralWithResult[R any](ctx context.Context, body Pi
 		// Fixed image
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*PixelFixerResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out PixelFixerResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1224,7 +1012,7 @@ func (c *Client) FixPixelArtNeuralWithResult[R any](ctx context.Context, body Pi
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(PixelFixerResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1252,14 +1040,6 @@ func (c *Client) FixPixelArtNeuralWithResult[R any](ctx context.Context, body Pi
 //
 //	GET /status
 func (c *Client) GetServiceStatus(ctx context.Context) (*StatusResponse, error) {
-	return c.GetServiceStatusWithResult[StatusResponse](ctx)
-}
-
-// Service status (no auth)
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /status
-func (c *Client) GetServiceStatusWithResult[R any](ctx context.Context) (*R, error) {
 	u := c.baseURL.JoinPath("status")
 	req := (&http.Request{
 		Header: http.Header{
@@ -1285,15 +1065,8 @@ func (c *Client) GetServiceStatusWithResult[R any](ctx context.Context) (*R, err
 		// Per-model status
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*StatusResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out StatusResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1302,7 +1075,7 @@ func (c *Client) GetServiceStatusWithResult[R any](ctx context.Context) (*R, err
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(StatusResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
