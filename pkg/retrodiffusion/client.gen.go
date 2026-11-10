@@ -707,7 +707,7 @@ func (c *Client) DeleteUserStyle(ctx context.Context, styleID PromptStyle) (*Del
 //
 //	DELETE /styles/{style_id}
 func (c *Client) DeleteUserStyleWithResult[R any](ctx context.Context, styleID PromptStyle) (*R, error) {
-	u := c.baseURL.JoinPath("styles", string(styleID))
+	u := c.baseURL.JoinPath("styles", url.PathEscape(string(styleID)))
 	req := (&http.Request{
 		Header: http.Header{
 			"X-Rd-Token": []string{c.apiKey},
@@ -776,7 +776,7 @@ func (c *Client) UpdateUserStyle(ctx context.Context, styleID PromptStyle, body 
 //
 //	PATCH /styles/{style_id}
 func (c *Client) UpdateUserStyleWithResult[R any](ctx context.Context, styleID PromptStyle, body *CreateStyleRequest) (*R, error) {
-	u := c.baseURL.JoinPath("styles", string(styleID))
+	u := c.baseURL.JoinPath("styles", url.PathEscape(string(styleID)))
 	req := (&http.Request{
 		Header: http.Header{
 			"X-Rd-Token": []string{c.apiKey},
@@ -929,7 +929,7 @@ func (c *Client) RunEditTool(ctx context.Context, toolID ToolID, body EditToolRe
 //
 //	POST /edit/tools/{tool_id}
 func (c *Client) RunEditToolWithResult[R any](ctx context.Context, toolID ToolID, body EditToolRequest) (*R, error) {
-	u := c.baseURL.JoinPath("edit", "tools", string(toolID))
+	u := c.baseURL.JoinPath("edit", "tools", url.PathEscape(string(toolID)))
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -1014,7 +1014,7 @@ func (c *Client) EstimateEditToolCost(ctx context.Context, toolID ToolID, body E
 //
 //	POST /edit/tools/{tool_id}/estimate
 func (c *Client) EstimateEditToolCostWithResult[R any](ctx context.Context, toolID ToolID, body EditToolRequest) (*R, error) {
-	u := c.baseURL.JoinPath("edit", "tools", string(toolID), "estimate")
+	u := c.baseURL.JoinPath("edit", "tools", url.PathEscape(string(toolID)), "estimate")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
