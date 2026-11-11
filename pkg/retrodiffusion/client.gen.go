@@ -597,7 +597,7 @@ func (c *Client) CreateUserStyle(ctx context.Context, body CreateStyleRequest) (
 //
 //	DELETE /styles/{style_id}
 func (c *Client) DeleteUserStyle(ctx context.Context, styleID PromptStyle) (*DeleteUserStyleOkJSONResponse, error) {
-	u := c.baseURL.JoinPath("styles", url.PathEscape(string(styleID)))
+	u := c.baseURL.JoinPath("styles", escapePathSegment(string(styleID)))
 	req := (&http.Request{
 		Header: http.Header{
 			"X-Rd-Token": []string{c.apiKey},
@@ -651,7 +651,7 @@ func (c *Client) DeleteUserStyle(ctx context.Context, styleID PromptStyle) (*Del
 //
 //	PATCH /styles/{style_id}
 func (c *Client) UpdateUserStyle(ctx context.Context, styleID PromptStyle, body *CreateStyleRequest) (*Style, error) {
-	u := c.baseURL.JoinPath("styles", url.PathEscape(string(styleID)))
+	u := c.baseURL.JoinPath("styles", escapePathSegment(string(styleID)))
 	req := (&http.Request{
 		Header: http.Header{
 			"X-Rd-Token": []string{c.apiKey},
@@ -769,7 +769,7 @@ func (c *Client) ListEditTools(ctx context.Context) (ListEditToolsOkJSONResponse
 //
 //	POST /edit/tools/{tool_id}
 func (c *Client) RunEditTool(ctx context.Context, toolID ToolID, body EditToolRequest) (*EditToolResponse, error) {
-	u := c.baseURL.JoinPath("edit", "tools", url.PathEscape(string(toolID)))
+	u := c.baseURL.JoinPath("edit", "tools", escapePathSegment(string(toolID)))
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -839,7 +839,7 @@ func (c *Client) RunEditTool(ctx context.Context, toolID ToolID, body EditToolRe
 //
 //	POST /edit/tools/{tool_id}/estimate
 func (c *Client) EstimateEditToolCost(ctx context.Context, toolID ToolID, body EditToolRequest) (*EditToolEstimate, error) {
-	u := c.baseURL.JoinPath("edit", "tools", url.PathEscape(string(toolID)), "estimate")
+	u := c.baseURL.JoinPath("edit", "tools", escapePathSegment(string(toolID)), "estimate")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -1087,6 +1087,18 @@ func (c *Client) GetServiceStatus(ctx context.Context) (*StatusResponse, error) 
 		}
 	default:
 		return nil, c.failed(ia, api.NewErrUnknownStatusCode(rsp))
+	}
+}
+
+// escapePathSegment escapes s, a path parameter, as one segment of a path: all but the characters RFC 3986 leaves
+// unreserved, as encodeURIComponent does, and a segment of . or .., so the client does not drop it, nor the segment
+// before it, from the path.
+func escapePathSegment(s string) string {
+	switch s {
+	case ".", "..":
+		return strings.ReplaceAll(s, ".", "%2E")
+	default:
+		return strings.ReplaceAll(url.QueryEscape(s), "+", "%20")
 	}
 }
 
