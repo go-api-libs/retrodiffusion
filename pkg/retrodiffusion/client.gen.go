@@ -144,17 +144,8 @@ func (c *Client) CreateInference(ctx context.Context, body InferenceRequest) (*I
 		case "application/json":
 			var out Inference
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(Inference)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -168,17 +159,8 @@ func (c *Client) CreateInference(ctx context.Context, body InferenceRequest) (*I
 		case "application/json":
 			var out Inference
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(Inference)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -192,17 +174,8 @@ func (c *Client) CreateInference(ctx context.Context, body InferenceRequest) (*I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(Error)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -210,47 +183,15 @@ func (c *Client) CreateInference(ctx context.Context, body InferenceRequest) (*I
 		default:
 			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
 		}
-	case http.StatusUnauthorized:
+	case http.StatusUnauthorized, http.StatusUnprocessableEntity:
 		// Missing/invalid X-RD-Token
-		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
-		case "application/json":
-			var out APIError
-			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(APIError)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-			}
-
-			return nil, api.NewErrCustom(rsp, &out)
-		default:
-			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
-		}
-	case http.StatusUnprocessableEntity:
 		// Body failed validation
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out APIError
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(APIError)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -258,10 +199,8 @@ func (c *Client) CreateInference(ctx context.Context, body InferenceRequest) (*I
 		default:
 			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
 		}
-	case http.StatusTooManyRequests:
+	case http.StatusTooManyRequests, http.StatusInternalServerError:
 		// Rate limited
-		return nil, fmt.Errorf("CreateInference: status %s", rsp.Status)
-	case http.StatusInternalServerError:
 		// Temporary failure (charges refunded)
 		return nil, fmt.Errorf("CreateInference: status %s", rsp.Status)
 	default:
@@ -300,17 +239,8 @@ func (c *Client) GetInferenceJob(ctx context.Context, taskID uuid.UUID) (*TaskSt
 		case "application/json":
 			var out TaskStatus
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(TaskStatus)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -357,17 +287,8 @@ func (c *Client) GetInferenceRequest(ctx context.Context, requestID uuid.UUID) (
 		case "application/json":
 			var out InferenceRequestResult
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(InferenceRequestResult)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -414,17 +335,8 @@ func (c *Client) GetBalance(ctx context.Context) (*CreditsResponse, error) {
 		case "application/json":
 			var out CreditsResponse
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(CreditsResponse)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -485,17 +397,8 @@ func (c *Client) ListAvailableStyles(ctx context.Context, params *ListAvailableS
 		case "application/json":
 			var out StyleDescriptors
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(StyleDescriptors)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -509,17 +412,8 @@ func (c *Client) ListAvailableStyles(ctx context.Context, params *ListAvailableS
 		case "application/json":
 			var out APIError
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(APIError)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -570,17 +464,8 @@ func (c *Client) CreateUserStyle(ctx context.Context, body CreateStyleRequest) (
 		case "application/json":
 			var out Style
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(Style)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -624,17 +509,8 @@ func (c *Client) DeleteUserStyle(ctx context.Context, styleID PromptStyle) (*Del
 		case "application/json":
 			var out DeleteUserStyleOkJSONResponse
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(DeleteUserStyleOkJSONResponse)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -688,17 +564,8 @@ func (c *Client) UpdateUserStyle(ctx context.Context, styleID PromptStyle, body 
 		case "application/json":
 			var out Style
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(Style)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -742,17 +609,8 @@ func (c *Client) ListEditTools(ctx context.Context) (ListEditToolsOkJSONResponse
 		case "application/json":
 			var out ListEditToolsOkJSONResponse
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(ListEditToolsOkJSONResponse)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -803,17 +661,8 @@ func (c *Client) RunEditTool(ctx context.Context, toolID ToolID, body EditToolRe
 		case "application/json":
 			var out EditToolResponse
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(EditToolResponse)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -821,13 +670,9 @@ func (c *Client) RunEditTool(ctx context.Context, toolID ToolID, body EditToolRe
 		default:
 			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
 		}
-	case http.StatusBadRequest:
+	case http.StatusBadRequest, http.StatusNotFound, http.StatusUnprocessableEntity:
 		// Semantically invalid or insufficient balance
-		return nil, fmt.Errorf("RunEditTool: status %s", rsp.Status)
-	case http.StatusNotFound:
 		// Unknown/disabled tool
-		return nil, fmt.Errorf("RunEditTool: status %s", rsp.Status)
-	case http.StatusUnprocessableEntity:
 		// Schema mismatch
 		return nil, fmt.Errorf("RunEditTool: status %s", rsp.Status)
 	default:
@@ -873,17 +718,8 @@ func (c *Client) EstimateEditToolCost(ctx context.Context, toolID ToolID, body E
 		case "application/json":
 			var out EditToolEstimate
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(EditToolEstimate)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -934,17 +770,8 @@ func (c *Client) FixPixelArtStandard(ctx context.Context, body PixelFixerRequest
 		case "application/json":
 			var out PixelFixerResponse
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(PixelFixerResponse)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -952,13 +779,9 @@ func (c *Client) FixPixelArtStandard(ctx context.Context, body PixelFixerRequest
 		default:
 			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
 		}
-	case http.StatusRequestEntityTooLarge:
+	case http.StatusRequestEntityTooLarge, http.StatusUnprocessableEntity, http.StatusTooManyRequests:
 		// Request or output too large
-		return nil, fmt.Errorf("FixPixelArtStandard: status %s", rsp.Status)
-	case http.StatusUnprocessableEntity:
 		// Invalid image
-		return nil, fmt.Errorf("FixPixelArtStandard: status %s", rsp.Status)
-	case http.StatusTooManyRequests:
 		// Rate limit exceeded
 		return nil, fmt.Errorf("FixPixelArtStandard: status %s", rsp.Status)
 	default:
@@ -1004,17 +827,8 @@ func (c *Client) FixPixelArtNeural(ctx context.Context, body PixelFixerRequest) 
 		case "application/json":
 			var out PixelFixerResponse
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(PixelFixerResponse)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
@@ -1022,13 +836,9 @@ func (c *Client) FixPixelArtNeural(ctx context.Context, body PixelFixerRequest) 
 		default:
 			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
 		}
-	case http.StatusRequestEntityTooLarge:
+	case http.StatusRequestEntityTooLarge, http.StatusUnprocessableEntity, http.StatusTooManyRequests:
 		// Request or output too large
-		return nil, fmt.Errorf("FixPixelArtNeural: status %s", rsp.Status)
-	case http.StatusUnprocessableEntity:
 		// Invalid image
-		return nil, fmt.Errorf("FixPixelArtNeural: status %s", rsp.Status)
-	case http.StatusTooManyRequests:
 		// Rate limit exceeded
 		return nil, fmt.Errorf("FixPixelArtNeural: status %s", rsp.Status)
 	default:
@@ -1067,17 +877,8 @@ func (c *Client) GetServiceStatus(ctx context.Context) (*StatusResponse, error) 
 		case "application/json":
 			var out StatusResponse
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				if ia == nil {
-					return nil, api.WrapDecodingError(rsp, err)
-				}
-
-				if kerr := c.keep(ia); kerr != nil {
-					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
-				}
-
-				out = *new(StatusResponse)
-				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
-					return nil, api.WrapDecodingError(rsp, err)
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
 				}
 			}
 
