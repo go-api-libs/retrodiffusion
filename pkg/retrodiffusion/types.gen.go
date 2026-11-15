@@ -125,12 +125,6 @@ type EditToolRequest struct {
 	RotationDegrees       *int                      `json:"rotation_degrees,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *EditToolRequest) unknownEnum() bool {
-	return v.DitherMode != "" && !v.DitherMode.Valid()
-}
-
 // EditToolRequestDitherMode defines a model
 type EditToolRequestDitherMode string
 
@@ -264,12 +258,6 @@ type InferenceRequest struct {
 	ExtraInputImage string `json:"extra_input_image,omitzero"`
 	// Placeholder — current models ignore it. Do not rely on it.
 	Negative string `json:"negative,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *InferenceRequest) unknownEnum() bool {
-	return !v.PromptStyle.Valid()
 }
 
 // InferenceRequestResult defines a model
@@ -529,7 +517,7 @@ type TaskStatus struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *TaskStatus) unknownEnum() bool {
-	return !v.Status.Valid()
+	return v.Status != "" && !v.Status.Valid()
 }
 
 // TaskStatusError defines a model

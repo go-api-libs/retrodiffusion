@@ -2744,12 +2744,20 @@ func TestClient_Interactions(t *testing.T) {
 		t.Fatalf("ListAvailableStyles: %v", err)
 	} else {
 		apitest.DecodedAsSent(t, "ListAvailableStyles", out, last.Body, jsonOpts)
+
+		if out != nil && out.unknownEnum() {
+			t.Errorf("ListAvailableStyles: holds a value of an enum the specification does not list")
+		}
 	}
 
 	if out, err := c.ListAvailableStyles(ctx, &ListAvailableStylesParams{}); err != nil {
 		t.Fatalf("ListAvailableStyles: %v", err)
 	} else {
 		apitest.DecodedAsSent(t, "ListAvailableStyles", out, last.Body, jsonOpts)
+
+		if out != nil && out.unknownEnum() {
+			t.Errorf("ListAvailableStyles: holds a value of an enum the specification does not list")
+		}
 	}
 
 	if out, err := c.CreateInference(ctx, InferenceRequest{
