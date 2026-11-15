@@ -7,6 +7,7 @@ package retrodiffusion
 import (
 	"encoding/json/v2"
 	"net/url"
+	"slices"
 	"time"
 	"uuid"
 
@@ -87,6 +88,12 @@ type EditToolEstimate struct {
 	EstimateSeconds *float64 `json:"estimate_seconds,omitzero"`
 }
 
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v *EditToolEstimate) unknownEnum() bool {
+	return v.ToolID != "" && !v.ToolID.Valid()
+}
+
 // EditToolRequest defines a model
 type EditToolRequest struct {
 	// Raw base64 or data:image/...;base64 data URI
@@ -116,6 +123,12 @@ type EditToolRequest struct {
 	Width                 *int                      `json:"width,omitzero"`
 	Height                *int                      `json:"height,omitzero"`
 	RotationDegrees       *int                      `json:"rotation_degrees,omitzero"`
+}
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v *EditToolRequest) unknownEnum() bool {
+	return v.DitherMode != "" && !v.DitherMode.Valid()
 }
 
 // EditToolRequestDitherMode defines a model
@@ -148,6 +161,12 @@ type EditToolResponse struct {
 	CreditCost       *float64 `json:"credit_cost,omitzero"`
 	Charged          *bool    `json:"charged,omitzero"`
 	RemainingBalance *float64 `json:"remaining_balance,omitzero"`
+}
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v *EditToolResponse) unknownEnum() bool {
+	return v.ToolID != "" && !v.ToolID.Valid()
 }
 
 // Error defines a model
@@ -247,6 +266,12 @@ type InferenceRequest struct {
 	Negative string `json:"negative,omitzero"`
 }
 
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v *InferenceRequest) unknownEnum() bool {
+	return !v.PromptStyle.Valid()
+}
+
 // InferenceRequestResult defines a model
 type InferenceRequestResult map[string]struct{}
 
@@ -275,6 +300,12 @@ func (e Model) Valid() bool {
 
 // Models defines a model
 type Models []Model
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v Models) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x Model) bool { return !x.Valid() })
+}
 
 // Provide exactly one of input_image or image_url. width/height are optional and only used by the neural endpoint.
 type PixelFixerRequest struct {
@@ -426,6 +457,14 @@ type Style struct {
 	GroupID                 string      `json:"group_id,omitzero"`
 }
 
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v *Style) unknownEnum() bool {
+	return v.PromptStyle != "" && !v.PromptStyle.Valid() ||
+		v.RequiredModel != "" && !v.RequiredModel.Valid() ||
+		v.RequiredTab != "" && !v.RequiredTab.Valid()
+}
+
 // StyleDescriptors defines a model
 type StyleDescriptors struct {
 	Styles Styles `json:"styles,omitzero"`
@@ -433,8 +472,22 @@ type StyleDescriptors struct {
 	Tabs   Tabs   `json:"tabs,omitzero"`
 }
 
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v *StyleDescriptors) unknownEnum() bool {
+	return v.Styles.unknownEnum() ||
+		v.Models.unknownEnum() ||
+		v.Tabs.unknownEnum()
+}
+
 // Styles defines a model
 type Styles []Style
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v Styles) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x Style) bool { return x.unknownEnum() })
+}
 
 // Tab defines a model
 type Tab string
@@ -459,12 +512,24 @@ func (e Tab) Valid() bool {
 // Tabs defines a model
 type Tabs []Tab
 
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v Tabs) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x Tab) bool { return !x.Valid() })
+}
+
 // TaskStatus defines a model
 type TaskStatus struct {
 	Status TaskStatusStatus `json:"status"`
 	TaskID uuid.UUID        `json:"task_id"`
 	Result Inference        `json:"result,omitzero"`
 	Err    *TaskStatusError `json:"error,omitzero"`
+}
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v *TaskStatus) unknownEnum() bool {
+	return !v.Status.Valid()
 }
 
 // TaskStatusError defines a model
