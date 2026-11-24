@@ -33,7 +33,7 @@ var defaultBaseURL = &url.URL{
 type Client struct {
 	// The HTTP client to use for requests.
 	cli *http.Client
-	// The API key
+	// The API key, sent in the header X-RD-Token
 	apiKey string
 	// The base URL
 	baseURL *url.URL
@@ -69,7 +69,7 @@ func WithHTTPClient(cli *http.Client) ClientOption {
 	return func(c *Client) { c.cli = cli }
 }
 
-// WithAPIKey returns a [ClientOption] that sets a custom API key.
+// WithAPIKey returns a [ClientOption] that sets the API key, sent in the header X-RD-Token.
 func WithAPIKey(apiKey string) ClientOption {
 	return func(c *Client) { c.apiKey = apiKey }
 }
@@ -92,7 +92,7 @@ func WithDebugFile(path string) ClientOption {
 // really sends. As each call reads and rewrites the file, it is for recording, not for everyday use.
 func WithRecording(c *Client) { c.debug, c.record = true, true }
 
-// NewClient creates a new Client.
+// NewClient creates a new Client, reading the API key from [os.Getenv]("RETRO_DIFFUSION_API_KEY").
 func NewClient(opts ...ClientOption) (*Client, error) {
 	c := &Client{
 		cli:       http.DefaultClient,
@@ -107,7 +107,7 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 	}
 
 	if c.apiKey == "" {
-		return nil, errors.New("api key RETRO_DIFFUSION_API_KEY not provided")
+		return nil, errors.New("API key RETRO_DIFFUSION_API_KEY not provided")
 	}
 
 	return c, nil
@@ -121,7 +121,6 @@ func (c *Client) CreateInference(ctx context.Context, body InferenceRequest) (*I
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
-			"X-Rd-Token":   []string{c.apiKey},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -134,6 +133,10 @@ func (c *Client) CreateInference(ctx context.Context, body InferenceRequest) (*I
 		Body:          pr,
 		ContentLength: -1,
 	}).WithContext(ctx)
+
+	if c.apiKey != "" {
+		req.Header.Set("X-RD-Token", c.apiKey)
+	}
 
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
@@ -222,7 +225,6 @@ func (c *Client) GetInferenceJob(ctx context.Context, taskID uuid.UUID) (*TaskSt
 	u := c.baseURL.JoinPath("inferences", "tasks", taskID.String())
 	req := (&http.Request{
 		Header: http.Header{
-			"X-Rd-Token": []string{c.apiKey},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -232,6 +234,10 @@ func (c *Client) GetInferenceJob(ctx context.Context, taskID uuid.UUID) (*TaskSt
 		ProtoMinor: 1,
 		URL:        u,
 	}).WithContext(ctx)
+
+	if c.apiKey != "" {
+		req.Header.Set("X-RD-Token", c.apiKey)
+	}
 
 	rsp, ia, err := c.do(req)
 	if err != nil {
@@ -277,7 +283,6 @@ func (c *Client) GetInferenceRequest(ctx context.Context, requestID uuid.UUID) (
 	u := c.baseURL.JoinPath("inferences", "requests", requestID.String())
 	req := (&http.Request{
 		Header: http.Header{
-			"X-Rd-Token": []string{c.apiKey},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -287,6 +292,10 @@ func (c *Client) GetInferenceRequest(ctx context.Context, requestID uuid.UUID) (
 		ProtoMinor: 1,
 		URL:        u,
 	}).WithContext(ctx)
+
+	if c.apiKey != "" {
+		req.Header.Set("X-RD-Token", c.apiKey)
+	}
 
 	rsp, ia, err := c.do(req)
 	if err != nil {
@@ -325,7 +334,6 @@ func (c *Client) GetBalance(ctx context.Context) (*CreditsResponse, error) {
 	u := c.baseURL.JoinPath("inferences", "credits")
 	req := (&http.Request{
 		Header: http.Header{
-			"X-Rd-Token": []string{c.apiKey},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -335,6 +343,10 @@ func (c *Client) GetBalance(ctx context.Context) (*CreditsResponse, error) {
 		ProtoMinor: 1,
 		URL:        u,
 	}).WithContext(ctx)
+
+	if c.apiKey != "" {
+		req.Header.Set("X-RD-Token", c.apiKey)
+	}
 
 	rsp, ia, err := c.do(req)
 	if err != nil {
@@ -387,7 +399,6 @@ func (c *Client) ListAvailableStyles(ctx context.Context, params *ListAvailableS
 
 	req := (&http.Request{
 		Header: http.Header{
-			"X-Rd-Token": []string{c.apiKey},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -397,6 +408,10 @@ func (c *Client) ListAvailableStyles(ctx context.Context, params *ListAvailableS
 		ProtoMinor: 1,
 		URL:        u,
 	}).WithContext(ctx)
+
+	if c.apiKey != "" {
+		req.Header.Set("X-RD-Token", c.apiKey)
+	}
 
 	rsp, ia, err := c.do(req)
 	if err != nil {
@@ -455,7 +470,6 @@ func (c *Client) CreateUserStyle(ctx context.Context, body CreateStyleRequest) (
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
-			"X-Rd-Token":   []string{c.apiKey},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -468,6 +482,10 @@ func (c *Client) CreateUserStyle(ctx context.Context, body CreateStyleRequest) (
 		Body:          pr,
 		ContentLength: -1,
 	}).WithContext(ctx)
+
+	if c.apiKey != "" {
+		req.Header.Set("X-RD-Token", c.apiKey)
+	}
 
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
@@ -513,7 +531,6 @@ func (c *Client) DeleteUserStyle(ctx context.Context, styleID PromptStyle) (*Del
 	u := c.baseURL.JoinPath("styles", escapePathSegment(string(styleID)))
 	req := (&http.Request{
 		Header: http.Header{
-			"X-Rd-Token": []string{c.apiKey},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -523,6 +540,10 @@ func (c *Client) DeleteUserStyle(ctx context.Context, styleID PromptStyle) (*Del
 		ProtoMinor: 1,
 		URL:        u,
 	}).WithContext(ctx)
+
+	if c.apiKey != "" {
+		req.Header.Set("X-RD-Token", c.apiKey)
+	}
 
 	rsp, ia, err := c.do(req)
 	if err != nil {
@@ -558,7 +579,6 @@ func (c *Client) UpdateUserStyle(ctx context.Context, styleID PromptStyle, body 
 	u := c.baseURL.JoinPath("styles", escapePathSegment(string(styleID)))
 	req := (&http.Request{
 		Header: http.Header{
-			"X-Rd-Token": []string{c.apiKey},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -568,6 +588,10 @@ func (c *Client) UpdateUserStyle(ctx context.Context, styleID PromptStyle, body 
 		ProtoMinor: 1,
 		URL:        u,
 	}).WithContext(ctx)
+
+	if c.apiKey != "" {
+		req.Header.Set("X-RD-Token", c.apiKey)
+	}
 
 	// an optional body left out is sent as no body at all, not as JSON null
 	if body != nil {
@@ -620,7 +644,6 @@ func (c *Client) ListEditTools(ctx context.Context) (ListEditToolsOkJSONResponse
 	u := c.baseURL.JoinPath("edit", "tools")
 	req := (&http.Request{
 		Header: http.Header{
-			"X-Rd-Token": []string{c.apiKey},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -630,6 +653,10 @@ func (c *Client) ListEditTools(ctx context.Context) (ListEditToolsOkJSONResponse
 		ProtoMinor: 1,
 		URL:        u,
 	}).WithContext(ctx)
+
+	if c.apiKey != "" {
+		req.Header.Set("X-RD-Token", c.apiKey)
+	}
 
 	rsp, ia, err := c.do(req)
 	if err != nil {
@@ -666,7 +693,6 @@ func (c *Client) RunEditTool(ctx context.Context, toolID ToolID, body EditToolRe
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
-			"X-Rd-Token":   []string{c.apiKey},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -679,6 +705,10 @@ func (c *Client) RunEditTool(ctx context.Context, toolID ToolID, body EditToolRe
 		Body:          pr,
 		ContentLength: -1,
 	}).WithContext(ctx)
+
+	if c.apiKey != "" {
+		req.Header.Set("X-RD-Token", c.apiKey)
+	}
 
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
@@ -730,7 +760,6 @@ func (c *Client) EstimateEditToolCost(ctx context.Context, toolID ToolID, body E
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
-			"X-Rd-Token":   []string{c.apiKey},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -743,6 +772,10 @@ func (c *Client) EstimateEditToolCost(ctx context.Context, toolID ToolID, body E
 		Body:          pr,
 		ContentLength: -1,
 	}).WithContext(ctx)
+
+	if c.apiKey != "" {
+		req.Header.Set("X-RD-Token", c.apiKey)
+	}
 
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
@@ -789,7 +822,6 @@ func (c *Client) FixPixelArtStandard(ctx context.Context, body PixelFixerRequest
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
-			"X-Rd-Token":   []string{c.apiKey},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -802,6 +834,10 @@ func (c *Client) FixPixelArtStandard(ctx context.Context, body PixelFixerRequest
 		Body:          pr,
 		ContentLength: -1,
 	}).WithContext(ctx)
+
+	if c.apiKey != "" {
+		req.Header.Set("X-RD-Token", c.apiKey)
+	}
 
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
@@ -846,7 +882,6 @@ func (c *Client) FixPixelArtNeural(ctx context.Context, body PixelFixerRequest) 
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
-			"X-Rd-Token":   []string{c.apiKey},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -859,6 +894,10 @@ func (c *Client) FixPixelArtNeural(ctx context.Context, body PixelFixerRequest) 
 		Body:          pr,
 		ContentLength: -1,
 	}).WithContext(ctx)
+
+	if c.apiKey != "" {
+		req.Header.Set("X-RD-Token", c.apiKey)
+	}
 
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
@@ -902,7 +941,6 @@ func (c *Client) GetServiceStatus(ctx context.Context) (*StatusResponse, error) 
 	u := c.baseURL.JoinPath("status")
 	req := (&http.Request{
 		Header: http.Header{
-			"X-Rd-Token": []string{c.apiKey},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -912,6 +950,10 @@ func (c *Client) GetServiceStatus(ctx context.Context) (*StatusResponse, error) 
 		ProtoMinor: 1,
 		URL:        u,
 	}).WithContext(ctx)
+
+	if c.apiKey != "" {
+		req.Header.Set("X-RD-Token", c.apiKey)
+	}
 
 	rsp, ia, err := c.do(req)
 	if err != nil {
@@ -977,6 +1019,9 @@ func (c *Client) do(req *http.Request) (*http.Response, *cassette.Interaction, e
 	}
 
 	ia := &cassette.Interaction{Request: recReq, Response: recRsp}
+
+	// masked now, as the key the specification names is no credential cassette knows, so nothing writes it
+	ia.Mask(cassette.MaskHeaders("X-RD-Token"))
 	if c.record {
 		if err := c.keep(ia); err != nil {
 			rsp.Body.Close()

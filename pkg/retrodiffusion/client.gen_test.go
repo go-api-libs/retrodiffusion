@@ -26,7 +26,7 @@ import (
 
 func TestClient_Error(t *testing.T) {
 	t.Run("CreateInference", func(t *testing.T) {
-		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
@@ -412,7 +412,7 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("GetInferenceJob", func(t *testing.T) {
-		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
@@ -580,7 +580,7 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("GetInferenceRequest", func(t *testing.T) {
-		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
@@ -727,7 +727,7 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("GetBalance", func(t *testing.T) {
-		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
@@ -895,7 +895,7 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("ListAvailableStyles", func(t *testing.T) {
-		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
@@ -1121,7 +1121,7 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("CreateUserStyle", func(t *testing.T) {
-		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
@@ -1278,7 +1278,7 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("DeleteUserStyle", func(t *testing.T) {
-		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
@@ -1435,7 +1435,7 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("UpdateUserStyle", func(t *testing.T) {
-		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
@@ -1670,7 +1670,7 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("ListEditTools", func(t *testing.T) {
-		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
@@ -1806,7 +1806,7 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("RunEditTool", func(t *testing.T) {
-		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
@@ -1996,7 +1996,7 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("EstimateEditToolCost", func(t *testing.T) {
-		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
@@ -2153,7 +2153,7 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("FixPixelArtStandard", func(t *testing.T) {
-		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
@@ -2343,7 +2343,7 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("FixPixelArtNeural", func(t *testing.T) {
-		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
@@ -2533,7 +2533,7 @@ func TestClient_Error(t *testing.T) {
 	})
 
 	t.Run("GetServiceStatus", func(t *testing.T) {
-		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 		t.Run("transport error", func(t *testing.T) {
 			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
@@ -2694,7 +2694,7 @@ func TestClient_Error(t *testing.T) {
 // under its name and written as the client must write it.
 func TestClient_Params(t *testing.T) {
 	t.Run("ListAvailableStyles", func(t *testing.T) {
-		t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+		t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 		var got *http.Request
 
@@ -2729,7 +2729,7 @@ func TestClient_Params(t *testing.T) {
 
 func TestClient_Interactions(t *testing.T) {
 	ctx := t.Context()
-	t.Setenv("RETRO_DIFFUSION_API_KEY", "************************************************")
+	t.Setenv("RETRO_DIFFUSION_API_KEY", "**************************************************")
 
 	last := &apitest.LastBody{Next: apitest.Replay(t, "../../api/interactions.json")}
 
@@ -2738,7 +2738,7 @@ func TestClient_Interactions(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if out, err := c.ListAvailableStyles(ctx, &ListAvailableStylesParams{
+	if out, err := c.ListAvailableStyles(apitest.OptionalAuth(ctx), &ListAvailableStylesParams{
 		Model: "rd_pro",
 	}); err != nil {
 		t.Fatalf("ListAvailableStyles: %v", err)
@@ -2750,7 +2750,7 @@ func TestClient_Interactions(t *testing.T) {
 		}
 	}
 
-	if out, err := c.ListAvailableStyles(ctx, &ListAvailableStylesParams{}); err != nil {
+	if out, err := c.ListAvailableStyles(apitest.OptionalAuth(ctx), &ListAvailableStylesParams{}); err != nil {
 		t.Fatalf("ListAvailableStyles: %v", err)
 	} else {
 		apitest.DecodedAsSent(t, "ListAvailableStyles", out, last.Body, jsonOpts)
@@ -2760,7 +2760,7 @@ func TestClient_Interactions(t *testing.T) {
 		}
 	}
 
-	if out, err := c.CreateInference(ctx, InferenceRequest{
+	if out, err := c.CreateInference(apitest.OptionalAuth(ctx), InferenceRequest{
 		Prompt:                  "security officer (a soldier). A 34-year-old male human. Lean and wiry, with a posture that suggests he's always expecting something to break. He wears the standard grey-blue security fatigues, kept meticulously clean despite the dust of the colony. A thin, jagged scar running through his left eyebrow. He has a habit of clicking his tongue when he's impatient.",
 		PromptStyle:             PromptStyleRdProTopdown,
 		Width:                   128,
@@ -2781,7 +2781,7 @@ func TestClient_Interactions(t *testing.T) {
 		apitest.DecodedAsSent(t, "CreateInference", out, last.Body, jsonOpts)
 	}
 
-	if out, err := c.CreateInference(ctx, InferenceRequest{
+	if out, err := c.CreateInference(apitest.OptionalAuth(ctx), InferenceRequest{
 		Prompt:                  "security officer (a soldier). A 34-year-old male human. Lean and wiry, with a posture that suggests he's always expecting something to break. He wears the standard grey-blue security fatigues, kept meticulously clean despite the dust of the colony. A thin, jagged scar running through his left eyebrow. He has a habit of clicking his tongue when he's impatient.",
 		PromptStyle:             PromptStyleGameAssetrdFlux,
 		Width:                   64,
@@ -2803,7 +2803,7 @@ func TestClient_Interactions(t *testing.T) {
 		apitest.DecodedAsSent(t, "CreateInference", out, last.Body, jsonOpts)
 	}
 
-	if _, err := c.CreateInference(ctx, InferenceRequest{
+	if _, err := c.CreateInference(apitest.OptionalAuth(ctx), InferenceRequest{
 		Prompt:                  "A lean, wiry security officer in their thirties, in clean grey-blue colony security fatigues with a circular Ares Prime colony patch on the left shoulder and no other insignia, a thin jagged scar through the left eyebrow, standing straight-backed and alert.",
 		PromptStyle:             PromptStyleRdAnimation8DirRotation,
 		Width:                   80,
