@@ -121,6 +121,7 @@ func (c *Client) CreateInference(ctx context.Context, body InferenceRequest) (*I
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
+			"Accept":       []string{"application/json"},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -225,6 +226,7 @@ func (c *Client) GetInferenceJob(ctx context.Context, taskID uuid.UUID) (*TaskSt
 	u := c.baseURL.JoinPath("inferences", "tasks", taskID.String())
 	req := (&http.Request{
 		Header: http.Header{
+			"Accept":     []string{"application/json"},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -283,6 +285,7 @@ func (c *Client) GetInferenceRequest(ctx context.Context, requestID uuid.UUID) (
 	u := c.baseURL.JoinPath("inferences", "requests", requestID.String())
 	req := (&http.Request{
 		Header: http.Header{
+			"Accept":     []string{"application/json"},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -334,6 +337,7 @@ func (c *Client) GetBalance(ctx context.Context) (*CreditsResponse, error) {
 	u := c.baseURL.JoinPath("inferences", "credits")
 	req := (&http.Request{
 		Header: http.Header{
+			"Accept":     []string{"application/json"},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -399,6 +403,7 @@ func (c *Client) ListAvailableStyles(ctx context.Context, params *ListAvailableS
 
 	req := (&http.Request{
 		Header: http.Header{
+			"Accept":     []string{"application/json"},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -470,6 +475,7 @@ func (c *Client) CreateUserStyle(ctx context.Context, body CreateStyleRequest) (
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
+			"Accept":       []string{"application/json"},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -531,6 +537,7 @@ func (c *Client) DeleteUserStyle(ctx context.Context, styleID PromptStyle) (*Del
 	u := c.baseURL.JoinPath("styles", escapePathSegment(string(styleID)))
 	req := (&http.Request{
 		Header: http.Header{
+			"Accept":     []string{"application/json"},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -579,6 +586,7 @@ func (c *Client) UpdateUserStyle(ctx context.Context, styleID PromptStyle, body 
 	u := c.baseURL.JoinPath("styles", escapePathSegment(string(styleID)))
 	req := (&http.Request{
 		Header: http.Header{
+			"Accept":     []string{"application/json"},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -644,6 +652,7 @@ func (c *Client) ListEditTools(ctx context.Context) (ListEditToolsOkJSONResponse
 	u := c.baseURL.JoinPath("edit", "tools")
 	req := (&http.Request{
 		Header: http.Header{
+			"Accept":     []string{"application/json"},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -693,6 +702,7 @@ func (c *Client) RunEditTool(ctx context.Context, toolID ToolID, body EditToolRe
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
+			"Accept":       []string{"application/json"},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -760,6 +770,7 @@ func (c *Client) EstimateEditToolCost(ctx context.Context, toolID ToolID, body E
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
+			"Accept":       []string{"application/json"},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -822,6 +833,7 @@ func (c *Client) FixPixelArtStandard(ctx context.Context, body PixelFixerRequest
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
+			"Accept":       []string{"application/json"},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -882,6 +894,7 @@ func (c *Client) FixPixelArtNeural(ctx context.Context, body PixelFixerRequest) 
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
+			"Accept":       []string{"application/json"},
 			"User-Agent":   []string{c.userAgent},
 			"Content-Type": []string{"application/json"},
 		},
@@ -941,6 +954,7 @@ func (c *Client) GetServiceStatus(ctx context.Context) (*StatusResponse, error) 
 	u := c.baseURL.JoinPath("status")
 	req := (&http.Request{
 		Header: http.Header{
+			"Accept":     []string{"application/json"},
 			"User-Agent": []string{c.userAgent},
 		},
 		Host:       u.Host,
